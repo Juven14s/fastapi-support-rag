@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "v031-default-cleanup-after-response",
+      "split": "test",
+      "question": "Une dépendance ouvre un fichier et le ferme dans finally après yield. Avec la configuration par défaut de Depends, le fichier est-il fermé avant ou après l’envoi de la réponse ?",
+      "gold": ["dependencies-with-yield/early-exit-and-scope"],
+      "markers": [["une fois la réponse envoyée", "après l’envoi", "après que la réponse"]]
+    },
+    {
+      "id": "v031-depends-scope-omitted",
+      "split": "test",
+      "question": "Dans Depends(get_resource), je ne passe aucun scope. Quand FastAPI exécute-t-il le nettoyage de la dépendance avec yield par rapport à la réponse HTTP ?",
+      "gold": ["dependencies-with-yield/early-exit-and-scope"],
+      "markers": [["une fois la réponse envoyée", "après l’envoi", "après que la réponse"]]
+    },
+    {
+      "id": "v031-yield-after-response",
+      "split": "test",
+      "question": "Sans définir de scope dans Depends, côté FastAPI, le code qui suit yield se lance-t-il alors que la réponse est déjà partie ?",
+      "gold": ["dependencies-with-yield/early-exit-and-scope"],
+      "markers": [["une fois la réponse envoyée", "après l’envoi", "après que la réponse"]]
+    },
+    {
+      "id": "v031-int-query-with-body",
+      "split": "test",
+      "question": "Dans une route FastAPI avec un corps JSON décrit par un modèle Pydantic, où le client doit-il envoyer un paramètre limit: int absent du chemin ?",
+      "gold": ["body/request-body-path-query-parameters"],
+      "markers": [["paramètres de requête de l’URL", "query string", "paramètre de requête"]]
+    },
+    {
+      "id": "v031-str-query-with-body",
+      "split": "test",
+      "question": "Ma fonction de route prend un objet BaseModel et un argument langue de type str. Langue ne figure pas dans le chemin. FastAPI la lit-il depuis le JSON ou depuis l’URL ?",
+      "gold": ["body/request-body-path-query-parameters"],
+      "markers": [["paramètres de requête de l’URL", "query string", "paramètre de requête"]]
+    },
+    {
+      "id": "v031-bool-query-with-body",
+      "split": "test",
+      "question": "Avec un corps Pydantic pour créer un produit, j’ajoute un paramètre preview: bool qui ne fait pas partie du chemin. Où mettre preview dans la requête ?",
+      "gold": ["body/request-body-path-query-parameters"],
+      "markers": [["paramètres de requête de l’URL", "query string", "paramètre de requête"]]
+    }
+  ]
+}

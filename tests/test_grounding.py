@@ -7,8 +7,10 @@ import numpy as np
 from support_rag.api import app
 from support_rag.documented import (
     GLOBAL_ID,
+    PARAMETER_SOURCE_ID,
     PATTERN_ID,
     SOURCE_ID,
+    YIELD_SCOPE_ID,
     documented_cleanup_order,
     documented_setting,
 )
@@ -187,3 +189,31 @@ def test_documented_config_and_version_preserve_scope_and_quoted_proof():
     )
     assert "utilise `pattern`" in answer
     assert reference.excerpt in version_section.text
+
+
+def test_default_scope_cites_cleanup_after_response():
+    path = Path(__file__).resolve().parents[1] / "support_rag/data/corpus.json"
+    section = next(item for item in Corpus.read(path).sections if item.id == YIELD_SCOPE_ID)
+    match = Match(Passage(section, section.text), score=1.0, similarity=1.0)
+    answer, citation = documented_setting(
+        "À quel moment le bloc après yield s’exécute-t-il sans préciser de `scope` ?", [match]
+    )
+    assert "une fois la réponse envoyée" in answer
+    assert citation.excerpt in section.text
+    assert documented_setting(
+        'Quand se ferme la dépendance yield si je fixe scope="function" ?', [match]
+    ) is None
+
+
+def test_scalar_source_with_body_respects_explicit_annotations():
+    path = Path(__file__).resolve().parents[1] / "support_rag/data/corpus.json"
+    section = next(item for item in Corpus.read(path).sections if item.id == PARAMETER_SOURCE_ID)
+    match = Match(Passage(section, section.text), score=1.0, similarity=1.0)
+    question = (
+        "Une route reçoit un modèle Pydantic et un paramètre str absent du chemin. "
+        "D’où vient le paramètre str ?"
+    )
+    answer, citation = documented_setting(question, [match])
+    assert "paramètres de requête de l’URL" in answer
+    assert citation.excerpt in section.text
+    assert documented_setting(f"{question} Le paramètre est déclaré via Header().", [match]) is None

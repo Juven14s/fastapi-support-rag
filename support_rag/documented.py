@@ -7,6 +7,8 @@ from support_rag.retrieval import Match, Section, folded_text
 SOURCE_ID = "dependencies-with-yield/sub-dependencies-with-yield"
 GLOBAL_ID = "global-dependencies/intro"
 PATTERN_ID = "query-params-str-validations/pydantic-v1-regex-instead-of-pattern"
+YIELD_SCOPE_ID = "dependencies-with-yield/early-exit-and-scope"
+PARAMETER_SOURCE_ID = "body/request-body-path-query-parameters"
 NAMED_DEPENDENCY = r"\bdependance\s+`?([a-zA-Z_][a-zA-Z_0-9]*)`?"
 ACTIVE = re.compile(
     rf"{NAMED_DEPENDENCY}\s+(?:utilise|depend de|requiert|a besoin de)\s+"
@@ -25,8 +27,16 @@ def cited(text: str, section: Section, excerpt: str) -> tuple[str, Citation]:
 
 
 def documented_setting(question: str, matches: list[Match]) -> tuple[str, Citation] | None:
-    text = folded_text(question).replace("’", "'")
+    text = folded_text(question).replace("’", "'").replace("`", "")
     sections = {match.passage.section.id: match.passage.section for match in matches}
+    if YIELD_SCOPE_ID in sections:
+        answer = documented_default_scope(text, sections[YIELD_SCOPE_ID])
+        if answer:
+            return answer
+    if PARAMETER_SOURCE_ID in sections:
+        answer = documented_parameter_source(text, sections[PARAMETER_SOURCE_ID])
+        if answer:
+            return answer
     if (
         GLOBAL_ID in sections
         and re.search(r"\b(?:toutes les routes|ensemble des routes|tous les endpoints)\b", text)
@@ -67,6 +77,56 @@ def documented_setting(question: str, matches: list[Match]) -> tuple[str, Citati
                 history[0],
             )
     return None
+
+
+def documented_default_scope(text: str, section: Section) -> tuple[str, Citation] | None:
+    if not (
+        re.search(r"\byield\b", text)
+        and re.search(r"\b(?:depend|scope|dependance)\b", text)
+        and re.search(r"\b(?:quand|moment|avant|apres|reponse|execut\w*|ferm\w*|nettoy\w*)\b", text)
+        and re.search(
+            r"\b(?:par defaut|sans (?:\w+ ){0,3}scope|aucun scope|scope (?:est )?omis)\b",
+            text,
+        )
+    ) or re.search(r"\b(?:historique|versions?|streaming\w*)\b|\bscope\s*=", text):
+        return None
+    proof = re.search(r"^Normally the exit code of dependencies with `yield`[^\n]+", section.text)
+    if proof is None or "**after the response** is sent to the client" not in proof[0]:
+        return None
+    return cited(
+        "Avec le scope par défaut de `Depends`, FastAPI exécute le bloc après `yield` "
+        "une fois la réponse envoyée au client.",
+        section,
+        proof[0],
+    )
+
+
+def documented_parameter_source(text: str, section: Section) -> tuple[str, Citation] | None:
+    if not (
+        re.search(r"\b(?:parametre|argument)\b", text)
+        and re.search(r"\b(?:str|int|float|bool)\b", text)
+        and re.search(r"\b(?:pydantic|basemodel)\b", text)
+        and re.search(
+            r"\b(?:absent\w*|ne (?:figure|se trouve) pas|n'est pas (?:declare\w*|present\w*)|"
+            r"ne fait pas partie) (?:dans le|du) chemin\b",
+            text,
+        )
+    ) or re.search(r"\b(?:body|form|header|cookie|query|path)\s*\(", text):
+        return None
+    proof = re.search(
+        r"^\* If the parameter is also declared in the \*\*path\*\*.*?"
+        r"will be interpreted as a request \*\*body\*\*\.",
+        section.text,
+        re.MULTILINE | re.DOTALL,
+    )
+    if proof is None or "it will be interpreted as a **query** parameter" not in proof[0]:
+        return None
+    return cited(
+        "FastAPI lit le paramètre de type simple dans les paramètres de requête de l’URL. "
+        "Le modèle Pydantic est alimenté par le corps de la requête.",
+        section,
+        proof[0],
+    )
 
 
 def documented_cleanup_order(question: str, matches: list[Match]) -> tuple[str, Citation] | None:
