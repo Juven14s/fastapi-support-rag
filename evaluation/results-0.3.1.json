@@ -1,0 +1,798 @@
+{
+  "runtime": {
+    "model_state_before": "2026-11-23T13:15:15.214053336Z 0",
+    "commit": "045e32d",
+    "version": "0.3.1",
+    "model_state_after": "2026-11-23T13:15:15.214053336Z 0",
+    "verified_container_source_sha256": {
+      "pyproject.toml": "b682fd42410aed42435de14a09f984e44b1c062c38d41952215fc23dd52c9630",
+      "support_rag/api.py": "bf4e5d03246b6f485ab4cf094f3718897c9fd18caa06834201f1a2ce57d0f874",
+      "support_rag/documented.py": "46dc6eee8e8e347ed1bf1a61ce0fadcbf25d02b56f77daed5a6e9d4a3b267ae1"
+    }
+  },
+  "targeted_test": {
+    "summary": {
+      "selected_cases": 6,
+      "answerable_cases": 6,
+      "unanswerable_cases": 0,
+      "k": 5,
+      "retrieval": {
+        "lexical": {
+          "hit_at_k": {
+            "successes": 5,
+            "total": 6,
+            "rate": 0.8333333333333334
+          },
+          "mrr_at_k": 0.5750000000000001,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 6,
+            "median": 4.7,
+            "p95": 26.97
+          }
+        },
+        "dense": {
+          "hit_at_k": {
+            "successes": 6,
+            "total": 6,
+            "rate": 1.0
+          },
+          "mrr_at_k": 0.875,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 6,
+            "median": 10.5,
+            "p95": 23.5
+          }
+        },
+        "hybrid": {
+          "hit_at_k": {
+            "successes": 6,
+            "total": 6,
+            "rate": 1.0
+          },
+          "mrr_at_k": 0.8055555555555555,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 6,
+            "median": 11.9,
+            "p95": 22.74
+          }
+        }
+      },
+      "answers": {
+        "answered_when_answerable": {
+          "successes": 6,
+          "total": 6,
+          "rate": 1.0
+        },
+        "expected_citation": {
+          "successes": 6,
+          "total": 6,
+          "rate": 1.0
+        },
+        "all_answer_markers": {
+          "successes": 6,
+          "total": 6,
+          "rate": 1.0
+        },
+        "abstained_when_unsupported": {
+          "successes": 0,
+          "total": 0,
+          "rate": null
+        },
+        "answers_with_invalid_citations": 0,
+        "model_calls": 0,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 6,
+          "median": 11.8,
+          "p95": 41.14
+        }
+      },
+      "split": "test",
+      "smoke": false,
+      "corpus_revision": "325fd16d32fd815633d6caf3d0d75aa7f30c51c9",
+      "qualitative_review": {
+        "correct": 6
+      }
+    },
+    "cases": [
+      {
+        "id": "v031-default-cleanup-after-response",
+        "split": "test",
+        "question": "Une dépendance ouvre un fichier et le ferme dans finally après yield. Avec la configuration par défaut de Depends, le fichier est-il fermé avant ou après l’envoi de la réponse ?",
+        "gold": [
+          "dependencies-with-yield/early-exit-and-scope"
+        ],
+        "markers": [
+          [
+            "une fois la réponse envoyée",
+            "après l’envoi",
+            "après que la réponse"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/a-database-dependency-with-yield",
+              "dependencies-with-yield/a-dependency-with-yield-and-try",
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/dependencies-with-yield-and-httpexception"
+            ],
+            "first_expected_rank": 4,
+            "client_latency_ms": 26.97
+          },
+          "dense": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/execution-of-dependencies-with-yield",
+              "dependencies-with-yield/a-database-dependency-with-yield",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/sub-dependencies-with-yield"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 23.5
+          },
+          "hybrid": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/execution-of-dependencies-with-yield",
+              "dependencies-with-yield/a-database-dependency-with-yield",
+              "dependencies-with-yield/scope-for-sub-dependencies"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 12.86
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "Avec le scope par défaut de `Depends`, FastAPI exécute le bloc après `yield` une fois la réponse envoyée au client.",
+          "citation_ids": [
+            "dependencies-with-yield/early-exit-and-scope"
+          ],
+          "citations": [
+            {
+              "id": "dependencies-with-yield/early-exit-and-scope",
+              "title": "Dependencies with yield · Early exit and scope",
+              "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+              "excerpt": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 13.49
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse situe le nettoyage après l’envoi, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v031-depends-scope-omitted",
+        "split": "test",
+        "question": "Dans Depends(get_resource), je ne passe aucun scope. Quand FastAPI exécute-t-il le nettoyage de la dépendance avec yield par rapport à la réponse HTTP ?",
+        "gold": [
+          "dependencies-with-yield/early-exit-and-scope"
+        ],
+        "markers": [
+          [
+            "une fois la réponse envoyée",
+            "après l’envoi",
+            "après que la réponse"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+              "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 4.29
+          },
+          "dense": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+              "dependencies-with-yield/dependencies-with-yield-and-except",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "sub-dependencies/use-the-dependency"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 10.01
+          },
+          "hybrid": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/dependencies-with-yield-and-except",
+              "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/scope-for-sub-dependencies"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 11.8
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "Avec le scope par défaut de `Depends`, FastAPI exécute le bloc après `yield` une fois la réponse envoyée au client.",
+          "citation_ids": [
+            "dependencies-with-yield/early-exit-and-scope"
+          ],
+          "citations": [
+            {
+              "id": "dependencies-with-yield/early-exit-and-scope",
+              "title": "Dependencies with yield · Early exit and scope",
+              "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+              "excerpt": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 12.0
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse situe le nettoyage après l’envoi, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v031-yield-after-response",
+        "split": "test",
+        "question": "Sans définir de scope dans Depends, côté FastAPI, le code qui suit yield se lance-t-il alors que la réponse est déjà partie ?",
+        "gold": [
+          "dependencies-with-yield/early-exit-and-scope"
+        ],
+        "markers": [
+          [
+            "une fois la réponse envoyée",
+            "après l’envoi",
+            "après que la réponse"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+              "dependencies-with-yield/intro"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 4.63
+          },
+          "dense": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/intro",
+              "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 10.25
+          },
+          "hybrid": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/dependencies-with-yield-and-except",
+              "handling-errors/install-custom-exception-handlers",
+              "dependencies-with-yield/sub-dependencies-with-yield"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 11.97
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "Avec le scope par défaut de `Depends`, FastAPI exécute le bloc après `yield` une fois la réponse envoyée au client.",
+          "citation_ids": [
+            "dependencies-with-yield/early-exit-and-scope"
+          ],
+          "citations": [
+            {
+              "id": "dependencies-with-yield/early-exit-and-scope",
+              "title": "Dependencies with yield · Early exit and scope",
+              "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+              "excerpt": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 10.24
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse situe le nettoyage après l’envoi, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v031-int-query-with-body",
+        "split": "test",
+        "question": "Dans une route FastAPI avec un corps JSON décrit par un modèle Pydantic, où le client doit-il envoyer un paramètre limit: int absent du chemin ?",
+        "gold": [
+          "body/request-body-path-query-parameters"
+        ],
+        "markers": [
+          [
+            "paramètres de requête de l’URL",
+            "query string",
+            "paramètre de requête"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "testing-dependencies/use-the-app-dependency-overrides-attribute",
+              "dependencies/import-depends",
+              "dependencies/create-a-dependency-or-dependable",
+              "dependencies/share-annotated-dependencies",
+              "dependencies/declare-the-dependency-in-the-dependant"
+            ],
+            "first_expected_rank": null,
+            "client_latency_ms": 3.7
+          },
+          "dense": {
+            "ids": [
+              "body/request-body-path-query-parameters",
+              "dependencies/import-depends",
+              "body/request-body-path-parameters",
+              "body/declare-it-as-a-parameter",
+              "dependencies-with-yield/dependencies-with-yield-and-except"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 9.23
+          },
+          "hybrid": {
+            "ids": [
+              "body/request-body-path-parameters",
+              "body/request-body-path-query-parameters",
+              "body/intro",
+              "dependencies/import-depends",
+              "body/declare-it-as-a-parameter"
+            ],
+            "first_expected_rank": 2,
+            "client_latency_ms": 10.37
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "FastAPI lit le paramètre de type simple dans les paramètres de requête de l’URL. Le modèle Pydantic est alimenté par le corps de la requête.",
+          "citation_ids": [
+            "body/request-body-path-query-parameters"
+          ],
+          "citations": [
+            {
+              "id": "body/request-body-path-query-parameters",
+              "title": "Request Body · Request body + path + query parameters",
+              "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+              "excerpt": "* If the parameter is also declared in the **path**, it will be used as a path parameter.\n* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 11.38
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse distingue le paramètre de requête et le corps Pydantic, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v031-str-query-with-body",
+        "split": "test",
+        "question": "Ma fonction de route prend un objet BaseModel et un argument langue de type str. Langue ne figure pas dans le chemin. FastAPI la lit-il depuis le JSON ou depuis l’URL ?",
+        "gold": [
+          "body/request-body-path-query-parameters"
+        ],
+        "markers": [
+          [
+            "paramètres de requête de l’URL",
+            "query string",
+            "paramètre de requête"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "query-params-str-validations/query-parameter-list-multiple-values",
+              "handling-errors/use-the-requestvalidationerror-body",
+              "body/declare-it-as-a-parameter",
+              "body/create-your-data-model",
+              "body/request-body-path-query-parameters"
+            ],
+            "first_expected_rank": 5,
+            "client_latency_ms": 4.74
+          },
+          "dense": {
+            "ids": [
+              "body/request-body-path-query-parameters",
+              "body/results",
+              "body/declare-it-as-a-parameter",
+              "body/create-your-data-model",
+              "body/request-body-path-parameters"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 10.66
+          },
+          "hybrid": {
+            "ids": [
+              "body/request-body-path-query-parameters",
+              "body/declare-it-as-a-parameter",
+              "body/results",
+              "body/create-your-data-model",
+              "body/request-body-path-parameters"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 11.86
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "FastAPI lit le paramètre de type simple dans les paramètres de requête de l’URL. Le modèle Pydantic est alimenté par le corps de la requête.",
+          "citation_ids": [
+            "body/request-body-path-query-parameters"
+          ],
+          "citations": [
+            {
+              "id": "body/request-body-path-query-parameters",
+              "title": "Request Body · Request body + path + query parameters",
+              "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+              "excerpt": "* If the parameter is also declared in the **path**, it will be used as a path parameter.\n* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 41.14
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse distingue le paramètre de requête et le corps Pydantic, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v031-bool-query-with-body",
+        "split": "test",
+        "question": "Avec un corps Pydantic pour créer un produit, j’ajoute un paramètre preview: bool qui ne fait pas partie du chemin. Où mettre preview dans la requête ?",
+        "gold": [
+          "body/request-body-path-query-parameters"
+        ],
+        "markers": [
+          [
+            "paramètres de requête de l’URL",
+            "query string",
+            "paramètre de requête"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "body/request-body-path-query-parameters",
+              "body/use-the-model",
+              "body/import-pydantics-basemodel",
+              "body/without-pydantic",
+              "handling-errors/requestvalidationerror-vs-validationerror"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 5.61
+          },
+          "dense": {
+            "ids": [
+              "body/request-body-path-parameters",
+              "body/use-the-model",
+              "body/declare-it-as-a-parameter",
+              "body/request-body-path-query-parameters",
+              "query-params-str-validations/pydantic-v1-regex-instead-of-pattern"
+            ],
+            "first_expected_rank": 4,
+            "client_latency_ms": 18.35
+          },
+          "hybrid": {
+            "ids": [
+              "body/request-body-path-parameters",
+              "body/without-pydantic",
+              "body/request-body-path-query-parameters",
+              "body/declare-it-as-a-parameter",
+              "body/use-the-model"
+            ],
+            "first_expected_rank": 3,
+            "client_latency_ms": 22.74
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "FastAPI lit le paramètre de type simple dans les paramètres de requête de l’URL. Le modèle Pydantic est alimenté par le corps de la requête.",
+          "citation_ids": [
+            "body/request-body-path-query-parameters"
+          ],
+          "citations": [
+            {
+              "id": "body/request-body-path-query-parameters",
+              "title": "Request Body · Request body + path + query parameters",
+              "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+              "excerpt": "* If the parameter is also declared in the **path**, it will be used as a path parameter.\n* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 11.53
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse distingue le paramètre de requête et le corps Pydantic, comme le passage affiché."
+        }
+      }
+    ]
+  },
+  "regression_replay": {
+    "summary": {
+      "selected_cases": 2,
+      "answerable_cases": 2,
+      "unanswerable_cases": 0,
+      "k": 5,
+      "retrieval": {
+        "lexical": {
+          "hit_at_k": {
+            "successes": 2,
+            "total": 2,
+            "rate": 1.0
+          },
+          "mrr_at_k": 1.0,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 2,
+            "median": 26.6,
+            "p95": 29.52
+          }
+        },
+        "dense": {
+          "hit_at_k": {
+            "successes": 2,
+            "total": 2,
+            "rate": 1.0
+          },
+          "mrr_at_k": 0.5,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 2,
+            "median": 11.2,
+            "p95": 12.84
+          }
+        },
+        "hybrid": {
+          "hit_at_k": {
+            "successes": 2,
+            "total": 2,
+            "rate": 1.0
+          },
+          "mrr_at_k": 1.0,
+          "errors": 0,
+          "client_latency_ms": {
+            "measured": 2,
+            "median": 10.2,
+            "p95": 10.57
+          }
+        }
+      },
+      "answers": {
+        "answered_when_answerable": {
+          "successes": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "expected_citation": {
+          "successes": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "all_answer_markers": {
+          "successes": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "abstained_when_unsupported": {
+          "successes": 0,
+          "total": 0,
+          "rate": null
+        },
+        "answers_with_invalid_citations": 0,
+        "model_calls": 0,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 2,
+          "median": 10.9,
+          "p95": 11.05
+        }
+      },
+      "split": "test",
+      "smoke": false,
+      "corpus_revision": "325fd16d32fd815633d6caf3d0d75aa7f30c51c9",
+      "qualitative_review": {
+        "correct": 2
+      }
+    },
+    "cases": [
+      {
+        "id": "v03-default-yield-scope",
+        "split": "test",
+        "question": "À quel moment s’exécute le bloc après yield si je ne précise aucun scope dans Depends ?",
+        "gold": [
+          "dependencies-with-yield/early-exit-and-scope",
+          "dependencies-with-yield/execution-of-dependencies-with-yield"
+        ],
+        "markers": [
+          [
+            "après"
+          ],
+          [
+            "réponse"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+              "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 29.52
+          },
+          "dense": {
+            "ids": [
+              "dependencies-with-yield/a-dependency-with-yield-and-try",
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+              "dependencies-with-yield/sub-dependencies-with-yield"
+            ],
+            "first_expected_rank": 2,
+            "client_latency_ms": 12.84
+          },
+          "hybrid": {
+            "ids": [
+              "dependencies-with-yield/early-exit-and-scope",
+              "dependencies-with-yield/scope-for-sub-dependencies",
+              "dependencies-with-yield/a-dependency-with-yield-and-try",
+              "dependencies-with-yield/sub-dependencies-with-yield",
+              "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 10.57
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "Avec le scope par défaut de `Depends`, FastAPI exécute le bloc après `yield` une fois la réponse envoyée au client.",
+          "citation_ids": [
+            "dependencies-with-yield/early-exit-and-scope"
+          ],
+          "citations": [
+            {
+              "id": "dependencies-with-yield/early-exit-and-scope",
+              "title": "Dependencies with yield · Early exit and scope",
+              "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+              "excerpt": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 10.83
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse situe le nettoyage après l’envoi, comme le passage affiché."
+        }
+      },
+      {
+        "id": "v03-scalar-query-with-body",
+        "split": "test",
+        "question": "Ma route reçoit un modèle Pydantic item et un autre paramètre q de type str. Si q est absent du chemin, d’où vient sa valeur ?",
+        "gold": [
+          "body/request-body-path-query-parameters",
+          "body/declare-it-as-a-parameter"
+        ],
+        "markers": [
+          [
+            "query",
+            "requête"
+          ],
+          [
+            "q"
+          ]
+        ],
+        "retrieval": {
+          "lexical": {
+            "ids": [
+              "body/declare-it-as-a-parameter",
+              "body/request-body-path-query-parameters",
+              "body/import-pydantics-basemodel",
+              "body/use-the-model",
+              "query-params-str-validations/custom-validation"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 23.69
+          },
+          "dense": {
+            "ids": [
+              "query-params-str-validations/alternative-old-query-as-the-default-value",
+              "body/request-body-path-query-parameters",
+              "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+              "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+              "sub-dependencies/second-dependency-dependable-and-dependant"
+            ],
+            "first_expected_rank": 2,
+            "client_latency_ms": 9.58
+          },
+          "hybrid": {
+            "ids": [
+              "body/request-body-path-query-parameters",
+              "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+              "query-params-str-validations/alternative-old-query-as-the-default-value",
+              "query-params-str-validations/use-annotated-in-the-type-for-the-q-parameter",
+              "query-params-str-validations/query-as-the-default-value-or-in-annotated"
+            ],
+            "first_expected_rank": 1,
+            "client_latency_ms": 9.84
+          }
+        },
+        "answer": {
+          "status": "answered",
+          "answer": "FastAPI lit le paramètre de type simple dans les paramètres de requête de l’URL. Le modèle Pydantic est alimenté par le corps de la requête.",
+          "citation_ids": [
+            "body/request-body-path-query-parameters"
+          ],
+          "citations": [
+            {
+              "id": "body/request-body-path-query-parameters",
+              "title": "Request Body · Request body + path + query parameters",
+              "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+              "excerpt": "* If the parameter is also declared in the **path**, it will be used as a path parameter.\n* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**."
+            }
+          ],
+          "invalid_citation_ids": [],
+          "expected_citation": true,
+          "all_markers_found": true,
+          "model_called": false,
+          "model_attempts": 0,
+          "client_latency_ms": 11.05
+        },
+        "qualitative_review": {
+          "verdict": "correct",
+          "notes": "La réponse distingue le paramètre de requête et le corps Pydantic, comme le passage affiché."
+        }
+      }
+    ]
+  }
+}

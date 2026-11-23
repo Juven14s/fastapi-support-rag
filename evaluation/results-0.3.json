@@ -1,0 +1,1529 @@
+{
+  "summary": {
+    "selected_cases": 20,
+    "answerable_cases": 15,
+    "unanswerable_cases": 5,
+    "k": 5,
+    "retrieval": {
+      "lexical": {
+        "hit_at_k": {
+          "successes": 12,
+          "total": 15,
+          "rate": 0.8
+        },
+        "mrr_at_k": 0.7166666666666667,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 5.9,
+          "p95": 29.53
+        }
+      },
+      "dense": {
+        "hit_at_k": {
+          "successes": 14,
+          "total": 15,
+          "rate": 0.9333333333333333
+        },
+        "mrr_at_k": 0.6411111111111112,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 13.1,
+          "p95": 55.3
+        }
+      },
+      "hybrid": {
+        "hit_at_k": {
+          "successes": 15,
+          "total": 15,
+          "rate": 1.0
+        },
+        "mrr_at_k": 0.8222222222222223,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 10.8,
+          "p95": 34.63
+        }
+      }
+    },
+    "answers": {
+      "answered_when_answerable": {
+        "successes": 15,
+        "total": 15,
+        "rate": 1.0
+      },
+      "expected_citation": {
+        "successes": 15,
+        "total": 15,
+        "rate": 1.0
+      },
+      "all_answer_markers": {
+        "successes": 12,
+        "total": 15,
+        "rate": 0.8
+      },
+      "abstained_when_unsupported": {
+        "successes": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "answers_with_invalid_citations": 0,
+      "model_calls": 15,
+      "errors": 0,
+      "client_latency_ms": {
+        "measured": 20,
+        "median": 20094.9,
+        "p95": 65562.14
+      },
+      "generation_attempts": 19,
+      "questions_with_second_attempt": 4,
+      "median_model_question_latency_ms": 26919.8
+    },
+    "split": "test",
+    "smoke": false,
+    "corpus_revision": "325fd16d32fd815633d6caf3d0d75aa7f30c51c9",
+    "qualitative_review": {
+      "correct": 13,
+      "incorrect": 2,
+      "appropriate_abstention": 5
+    }
+  },
+  "cases": [
+    {
+      "id": "v03-openapi-dependencies",
+      "split": "test",
+      "question": "Les exigences de requête déclarées par une sous-dépendance apparaissent-elles dans le schéma OpenAPI et dans la documentation interactive ?",
+      "gold": [
+        "dependencies/integrated-with-openapi",
+        "dependencies/integrated-with-openapi_1"
+      ],
+      "markers": [
+        [
+          "oui",
+          "intégr"
+        ],
+        [
+          "OpenAPI"
+        ],
+        [
+          "documentation",
+          "docs"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies/integrated-with-openapi_1",
+            "dependencies/integrated-with-openapi",
+            "body/automatic-docs",
+            "query-params-str-validations/exclude-parameters-from-openapi",
+            "body/results"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 29.53
+        },
+        "dense": {
+          "ids": [
+            "dependencies/integrated-with-openapi",
+            "body/automatic-docs",
+            "dependencies/integrated-with-openapi_1",
+            "dependencies-in-path-operation-decorators/dependency-requirements",
+            "query-params-str-validations/exclude-parameters-from-openapi"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 11.29
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies/integrated-with-openapi",
+            "dependencies/integrated-with-openapi_1",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-in-path-operation-decorators/dependency-requirements",
+            "sub-dependencies/first-dependency-dependable"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 11.4
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Oui, les exigences de requête déclarées par une sous-dépendance apparaissent dans le schéma OpenAPI et dans la documentation interactive.",
+        "citation_ids": [
+          "dependencies/integrated-with-openapi",
+          "dependencies/integrated-with-openapi_1"
+        ],
+        "citations": [
+          {
+            "id": "dependencies/integrated-with-openapi",
+            "title": "Dependencies · Integrated with OpenAPI",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi",
+            "excerpt": "All the request declarations, validations and requirements of your dependencies (and sub-dependencies) will be integrated in the same OpenAPI schema.\n\nSo, the interactive docs will have all the information from these dependencies too:"
+          },
+          {
+            "id": "dependencies/integrated-with-openapi_1",
+            "title": "Dependencies · Integrated with OpenAPI",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi_1",
+            "excerpt": "All these dependencies, while declaring their requirements, also add parameters, validations, etc. to your *path operations*.\n\n**FastAPI** will take care of adding it all to the OpenAPI schema, so that it is shown in the interactive documentation systems."
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 14859.56
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La citation inclut les exigences des sous-dépendances dans OpenAPI et la documentation interactive."
+      }
+    },
+    {
+      "id": "v03-nested-depends",
+      "split": "test",
+      "question": "Comment mettre à disposition la valeur d’une fonction auxiliaire dans une autre fonction qui est elle-même une dépendance FastAPI ?",
+      "gold": [
+        "sub-dependencies/first-dependency-dependable",
+        "sub-dependencies/second-dependency-dependable-and-dependant"
+      ],
+      "markers": [
+        [
+          "Depends"
+        ],
+        [
+          "paramètre",
+          "Annotated"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "testing/fastapi-app-file",
+            "query-params-str-validations/import-query-and-annotated",
+            "query-params-str-validations/intro",
+            "dependencies-with-yield/using-context-managers-in-dependencies-with-yield",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 23.28
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/intro",
+            "dependencies-with-yield/using-context-managers-in-dependencies-with-yield",
+            "sub-dependencies/second-dependency-dependable-and-dependant",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies/declare-the-dependency-in-the-dependant"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 8.39
+        },
+        "hybrid": {
+          "ids": [
+            "sub-dependencies/second-dependency-dependable-and-dependant",
+            "dependencies/declare-the-dependency-in-the-dependant",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies/simple-usage",
+            "dependencies-with-yield/using-context-managers-in-dependencies-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 9.96
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour mettre à disposition la valeur d'une fonction auxiliaire dans une autre fonction dépendante dans FastAPI, on utilise `Depends` pour déclarer une dépendance. Par exemple, une fonction auxiliaire comme `query_extractor` peut être utilisée dans une autre fonction via `Depends(query_extractor)`, et sa valeur est automatiquement injectée dans le paramètre de la fonction dépendante.",
+        "citation_ids": [
+          "sub-dependencies/second-dependency-dependable-and-dependant",
+          "dependencies/declare-the-dependency-in-the-dependant"
+        ],
+        "citations": [
+          {
+            "id": "sub-dependencies/second-dependency-dependable-and-dependant",
+            "title": "Sub-dependencies · Second dependency, \"dependable\" and \"dependant\"",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#second-dependency-dependable-and-dependant",
+            "excerpt": "Then you can create another dependency function (a \"dependable\") that at the same time declares a dependency of its own (so it is a \"dependant\" too):\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Cookie, Depends, FastAPI\n\napp = FastAPI()\n\ndef query_extractor(q: str | None = None):\n    return q\n\ndef query_or_cookie_extractor(\n    q: Annotated[str, Depends(query_extractor)],"
+          },
+          {
+            "id": "dependencies/declare-the-dependency-in-the-dependant",
+            "title": "Dependencies · Declare the dependency, in the \"dependant\"",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#declare-the-dependency-in-the-dependant",
+            "excerpt": "The same way you use `Body`, `Query`, etc. with your *path operation function* parameters, use `Depends` with a new parameter:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items/\")"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 2,
+        "client_latency_ms": 89192.34
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "Le premier exemple montre Depends(query_extractor) dans un paramètre de la deuxième dépendance."
+      }
+    },
+    {
+      "id": "v03-stop-from-decorator",
+      "split": "test",
+      "question": "Une dépendance déclarée dans le décorateur peut-elle interrompre la requête si une vérification échoue ? Comment ?",
+      "gold": [
+        "dependencies-in-path-operation-decorators/raise-exceptions",
+        "dependencies-in-path-operation-decorators/dependency-requirements"
+      ],
+      "markers": [
+        [
+          "HTTPException"
+        ],
+        [
+          "lever",
+          "raise"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [],
+          "first_expected_rank": null,
+          "client_latency_ms": 16.26
+        },
+        "dense": {
+          "ids": [
+            "dependencies-in-path-operation-decorators/raise-exceptions",
+            "dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator",
+            "dependencies-in-path-operation-decorators/dependency-requirements",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-in-path-operation-decorators/return-values"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 10.71
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-in-path-operation-decorators/raise-exceptions",
+            "dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator",
+            "dependencies-in-path-operation-decorators/dependency-requirements",
+            "dependencies-in-path-operation-decorators/intro",
+            "dependencies-in-path-operation-decorators/dependencies-errors-and-return-values"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 9.39
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Oui, une dépendance déclarée dans le décorateur peut interrompre la requête si une vérification échoue. Lorsqu'une dépendance échoue, elle lance une exception (par exemple une HTTPException avec un code 400), ce qui interrompt immédiatement la requête et retourne une réponse d'erreur.",
+        "citation_ids": [
+          "dependencies-in-path-operation-decorators/raise-exceptions",
+          "dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator",
+          "dependencies-in-path-operation-decorators/dependency-requirements"
+        ],
+        "citations": [
+          {
+            "id": "dependencies-in-path-operation-decorators/raise-exceptions",
+            "title": "Dependencies in path operation decorators · Raise exceptions",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#raise-exceptions",
+            "excerpt": "These dependencies can `raise` exceptions, the same as normal dependencies:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, Header, HTTPException\n\napp = FastAPI()\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")"
+          },
+          {
+            "id": "dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator",
+            "title": "Dependencies in path operation decorators · Add dependencies to the *path operation decorator*",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#add-dependencies-to-the-path-operation-decorator",
+            "excerpt": "async def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```"
+          },
+          {
+            "id": "dependencies-in-path-operation-decorators/dependency-requirements",
+            "title": "Dependencies in path operation decorators · Dependency requirements",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#dependency-requirements",
+            "excerpt": "async def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": false,
+        "model_called": true,
+        "model_attempts": 2,
+        "client_latency_ms": 65562.14
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La dépendance peut lever une HTTPException. Le code 400 est présenté comme un exemple."
+      }
+    },
+    {
+      "id": "v03-default-yield-scope",
+      "split": "test",
+      "question": "À quel moment s’exécute le bloc après yield si je ne précise aucun scope dans Depends ?",
+      "gold": [
+        "dependencies-with-yield/early-exit-and-scope",
+        "dependencies-with-yield/execution-of-dependencies-with-yield"
+      ],
+      "markers": [
+        [
+          "après"
+        ],
+        [
+          "réponse"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 3.89
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+            "dependencies-with-yield/sub-dependencies-with-yield"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 18.16
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.6
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Le bloc après `yield` s'exécute **après que la réponse n'est pas envoyée au client**, mais **avant que la réponse ne soit envoyée**, si aucun scope n'est précisé. Cela signifie que le code de nettoyage (le bloc `finally`) est exécuté après la fonction du chemin (path operation) mais avant l'envoi de la réponse.",
+        "citation_ids": [
+          "dependencies-with-yield/early-exit-and-scope"
+        ],
+        "citations": [
+          {
+            "id": "dependencies-with-yield/early-exit-and-scope",
+            "title": "Dependencies with yield · Early exit and scope",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+            "excerpt": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client.\n\nBut if you know that you won't need to use the dependency after returning from the *path operation function*, you can use `Depends(scope=\"function\")` to tell FastAPI that it should close the dependency after the *path operation function* returns, but **before** the **response is sent**.\n\n```python"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 2,
+        "client_latency_ms": 64140.26
+      },
+      "qualitative_review": {
+        "verdict": "incorrect",
+        "notes": "La réponse se contredit et conclut à un nettoyage avant envoi. Le passage indique après envoi avec le scope par défaut."
+      }
+    },
+    {
+      "id": "v03-cleanup-retained-resource",
+      "split": "test",
+      "question": "Une dépendance transaction est utilisée par une dépendance service, toutes deux avec yield. Laquelle doit rester ouverte jusqu’à ce que l’autre termine son nettoyage ?",
+      "gold": [
+        "dependencies-with-yield/sub-dependencies-with-yield"
+      ],
+      "markers": [
+        [
+          "transaction"
+        ],
+        [
+          "service"
+        ],
+        [
+          "après",
+          "jusqu"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "testing-dependencies/use-cases-external-service",
+            "dependencies-with-yield/using-context-managers-in-dependencies-with-yield",
+            "dependencies-with-yield/a-database-dependency-with-yield",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 4.49
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/a-database-dependency-with-yield",
+            "dependencies-with-yield/a-dependency-with-yield-and-try"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 32.9
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies/simple-usage"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 34.63
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "FastAPI nettoie `service` avant `transaction`. La ressource `transaction` doit rester disponible jusqu’à la fin du nettoyage de `service`.",
+        "citation_ids": [
+          "dependencies-with-yield/sub-dependencies-with-yield"
+        ],
+        "citations": [
+          {
+            "id": "dependencies-with-yield/sub-dependencies-with-yield",
+            "title": "Dependencies with yield · Sub-dependencies with yield",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#sub-dependencies-with-yield",
+            "excerpt": "In this case `dependency_c`, to execute its exit code, needs the value from `dependency_b` (here named `dep_b`) to still be available.\n\nAnd, in turn, `dependency_b` needs the value from `dependency_a` (here named `dep_a`) to be available for its exit code."
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": false,
+        "model_attempts": 0,
+        "client_latency_ms": 13.98
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La réponse applique correctement à service et transaction la relation de dépendance décrite par le passage."
+      }
+    },
+    {
+      "id": "v03-lifespan-test",
+      "split": "test",
+      "question": "Le client AsyncClient démarre-t-il les événements de démarrage de l’application tout seul en test ? Quel outil la documentation conseille-t-elle pour les déclencher ?",
+      "gold": [
+        "async-tests/in-detail"
+      ],
+      "markers": [
+        [
+          "non",
+          "pas"
+        ],
+        [
+          "LifespanManager"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "async-tests/in-detail",
+            "testing/extended-testing-file",
+            "async-tests/httpx",
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "async-tests/example"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 4.34
+        },
+        "dense": {
+          "ids": [
+            "testing/using-testclient",
+            "async-tests/httpx",
+            "async-tests/other-asynchronous-function-calls",
+            "async-tests/in-detail",
+            "async-tests/example"
+          ],
+          "first_expected_rank": 4,
+          "client_latency_ms": 13.12
+        },
+        "hybrid": {
+          "ids": [
+            "async-tests/httpx",
+            "async-tests/in-detail",
+            "testing/using-testclient",
+            "async-tests/example",
+            "async-tests/intro"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 13.03
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Non, le client AsyncClient ne démarre pas les événements de démarrage de l'application tout seul. La documentation conseille d'utiliser le `LifespanManager` de `florimondmanca/asgi-lifespan` pour déclencher ces événements.",
+        "citation_ids": [
+          "async-tests/in-detail"
+        ],
+        "citations": [
+          {
+            "id": "async-tests/in-detail",
+            "title": "Async Tests · In Detail",
+            "url": "https://fastapi.tiangolo.com/advanced/async-tests/#in-detail",
+            "excerpt": "Note that we're using async/await with the new `AsyncClient` - the request is asynchronous.\n\nIf your application relies on lifespan events, the `AsyncClient` won't trigger these events. To ensure they are triggered, use `LifespanManager` from <a href=\"https://github.com/florimondmanca/asgi-lifespan#usage\" class=\"external-link\" target=\"_blank\">florimondmanca/asgi-lifespan</a>."
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 26919.79
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "Le passage établit que AsyncClient laisse les événements de cycle de vie à LifespanManager."
+      }
+    },
+    {
+      "id": "v03-test-base-url",
+      "split": "test",
+      "question": "Dans l’exemple de test avec HTTPX AsyncClient, quel argument permet ensuite d’envoyer une requête à un chemin relatif comme / ?",
+      "gold": [
+        "async-tests/example",
+        "async-tests/in-detail"
+      ],
+      "markers": [
+        [
+          "base_url"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "async-tests/in-detail",
+            "async-tests/example",
+            "async-tests/httpx",
+            "testing/extended-testing-file",
+            "testing/using-testclient"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 19.33
+        },
+        "dense": {
+          "ids": [
+            "async-tests/example",
+            "async-tests/in-detail",
+            "async-tests/httpx",
+            "testing/intro",
+            "testing/using-testclient"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 30.62
+        },
+        "hybrid": {
+          "ids": [
+            "async-tests/example",
+            "async-tests/in-detail",
+            "async-tests/httpx",
+            "testing/intro",
+            "testing/using-testclient"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 10.78
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "l'argument `base_url` permet d'envoyer une requête à un chemin relatif comme `/`.",
+        "citation_ids": [
+          "async-tests/example"
+        ],
+        "citations": [
+          {
+            "id": "async-tests/example",
+            "title": "Async Tests · Example",
+            "url": "https://fastapi.tiangolo.com/advanced/async-tests/#example",
+            "excerpt": "@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Tomato\"}\n```\n\nThe file `test_main.py` would have the tests for `main.py`, it could look like this now:\n\n```python\nimport pytest\nfrom httpx import ASGITransport, AsyncClient\n\nfrom .main import app\n\n@pytest.mark.anyio\nasync def test_root():\n    async with AsyncClient(\n        transport=ASGITransport(app=app), base_url=\"http://test\"\n    ) as ac:"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 18913.14
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La citation montre AsyncClient avec base_url puis une requête à un chemin relatif."
+      }
+    },
+    {
+      "id": "v03-await-other-functions",
+      "split": "test",
+      "question": "Dans un test async qui appelle une route FastAPI, puis-je aussi attendre une autre coroutine avec await pour vérifier un effet de bord ?",
+      "gold": [
+        "async-tests/other-asynchronous-function-calls",
+        "async-tests/intro"
+      ],
+      "markers": [
+        [
+          "oui",
+          "peut"
+        ],
+        [
+          "await"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "async-tests/in-detail",
+            "async-tests/example",
+            "async-tests/httpx",
+            "async-tests/intro",
+            "async-tests/pytest-mark-anyio"
+          ],
+          "first_expected_rank": 4,
+          "client_latency_ms": 17.79
+        },
+        "dense": {
+          "ids": [
+            "async-tests/other-asynchronous-function-calls",
+            "testing/using-testclient",
+            "async-tests/example",
+            "async-tests/intro",
+            "async-tests/httpx"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 11.42
+        },
+        "hybrid": {
+          "ids": [
+            "async-tests/example",
+            "async-tests/other-asynchronous-function-calls",
+            "testing/using-testclient",
+            "async-tests/intro",
+            "async-tests/in-detail"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 23.13
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Oui, dans un test async qui appelle une route FastAPI, vous pouvez aussi attendre une autre coroutine avec `await` pour vérifier un effet de bord, car les tests async permettent d'appeler et d'attendre d'autres fonctions async, comme indiqué dans l'extrait S2.1 : \"As the testing function is now asynchronous, you can now also call (and `await`) other `async` functions apart from sending requests to your FastAPI application in your tests, exactly as you would call them anywhere else in your code.\"",
+        "citation_ids": [
+          "async-tests/other-asynchronous-function-calls"
+        ],
+        "citations": [
+          {
+            "id": "async-tests/other-asynchronous-function-calls",
+            "title": "Async Tests · Other Asynchronous Function Calls",
+            "url": "https://fastapi.tiangolo.com/advanced/async-tests/#other-asynchronous-function-calls",
+            "excerpt": "As the testing function is now asynchronous, you can now also call (and `await`) other `async` functions apart from sending requests to your FastAPI application in your tests, exactly as you would call them anywhere else in your code.\n\nIf you encounter a `RuntimeError: Task attached to a different loop` when integrating asynchronous function calls in your tests (e.g. when using <a"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 28238.64
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La citation autorise explicitement les autres appels async via await."
+      }
+    },
+    {
+      "id": "v03-invalid-request-body",
+      "split": "test",
+      "question": "Quelle propriété de RequestValidationError donne le corps reçu dans la requête invalide ?",
+      "gold": [
+        "handling-errors/use-the-requestvalidationerror-body"
+      ],
+      "markers": [
+        [
+          "body"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/use-the-requestvalidationerror-body",
+            "handling-errors/requestvalidationerror-vs-validationerror",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 5.51
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/use-the-requestvalidationerror-body",
+            "handling-errors/requestvalidationerror-vs-validationerror",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "handling-errors/override-the-httpexception-error-handler"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.51
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/use-the-requestvalidationerror-body",
+            "handling-errors/override-request-validation-exceptions",
+            "body/intro",
+            "handling-errors/requestvalidationerror-vs-validationerror",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.63
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "La propriété `body` du `RequestValidationError` donne le corps reçu dans la requête invalide.",
+        "citation_ids": [
+          "handling-errors/use-the-requestvalidationerror-body"
+        ],
+        "citations": [
+          {
+            "id": "handling-errors/use-the-requestvalidationerror-body",
+            "title": "Handling Errors · Use the RequestValidationError body",
+            "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#use-the-requestvalidationerror-body",
+            "excerpt": "The `RequestValidationError` contains the `body` it received with invalid data.\n\nYou could use it while developing your app to log the body and debug it, return it to the user, etc.\n\n```python\nfrom fastapi import FastAPI, Request\nfrom fastapi.encoders import jsonable_encoder\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 20651.05
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La citation identifie l’attribut body et montre exc.body."
+      }
+    },
+    {
+      "id": "v03-reuse-default-handler",
+      "split": "test",
+      "question": "Je veux journaliser une erreur puis conserver la réponse d’erreur par défaut de FastAPI. D’où importer le gestionnaire d’exception HTTP existant ?",
+      "gold": [
+        "handling-errors/reuse-fastapis-exception-handlers"
+      ],
+      "markers": [
+        [
+          "fastapi.exception_handlers"
+        ],
+        [
+          "http_exception_handler"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/raise-an-httpexception-in-your-code",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 19.39
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/import-httpexception",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/override-the-default-exception-handlers",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": 5,
+          "client_latency_ms": 22.45
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/override-request-validation-exceptions",
+            "dependencies-with-yield/dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 10.23
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Importer le gestionnaire d’exception HTTP existant depuis `fastapi.exception_handlers`.",
+        "citation_ids": [
+          "handling-errors/reuse-fastapis-exception-handlers"
+        ],
+        "citations": [
+          {
+            "id": "handling-errors/reuse-fastapis-exception-handlers",
+            "title": "Handling Errors · Reuse FastAPI's exception handlers",
+            "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#reuse-fastapis-exception-handlers",
+            "excerpt": "If you want to use the exception along with the same default exception handlers from  **FastAPI**, you can import and reuse the default exception handlers from `fastapi.exception_handlers`:\n\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exception_handlers import (\n    http_exception_handler,\n    request_validation_exception_handler,\n)\nfrom fastapi.exceptions import RequestValidationError"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": false,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 19355.62
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "Le module demandé est correct. Le nom http_exception_handler est dans le passage et aurait rendu la réponse plus directement utilisable."
+      }
+    },
+    {
+      "id": "v03-body-attribute",
+      "split": "test",
+      "question": "Dans ma fonction de route qui reçoit item comme modèle Pydantic, comment lire son prix dans l’exemple de FastAPI ?",
+      "gold": [
+        "body/use-the-model"
+      ],
+      "markers": [
+        [
+          "item.price"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "body/use-the-model",
+            "body/import-pydantics-basemodel",
+            "body/request-body-path-parameters",
+            "body/declare-it-as-a-parameter",
+            "body/request-body-path-query-parameters"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 5.61
+        },
+        "dense": {
+          "ids": [
+            "body/declare-it-as-a-parameter",
+            "body/import-pydantics-basemodel",
+            "body/use-the-model",
+            "body/request-body-path-parameters",
+            "body/request-body-path-query-parameters"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 9.28
+        },
+        "hybrid": {
+          "ids": [
+            "body/declare-it-as-a-parameter",
+            "body/import-pydantics-basemodel",
+            "body/use-the-model",
+            "body/request-body-path-parameters",
+            "body/request-body-path-query-parameters"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 10.93
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Dans la fonction de route, vous pouvez lire le prix de l'objet `item` en accédant directement à l'attribut `price` de l'objet Pydantic `item`. Par exemple, dans la fonction `create_item`, vous pouvez utiliser `item.price` pour accéder à la valeur du prix.",
+        "citation_ids": [
+          "body/declare-it-as-a-parameter",
+          "body/use-the-model"
+        ],
+        "citations": [
+          {
+            "id": "body/declare-it-as-a-parameter",
+            "title": "Request Body · Declare it as a parameter",
+            "url": "https://fastapi.tiangolo.com/tutorial/body/#declare-it-as-a-parameter",
+            "excerpt": "To add it to your *path operation*, declare it the same way you declared path and query parameters:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n```"
+          },
+          {
+            "id": "body/use-the-model",
+            "title": "Request Body · Use the model",
+            "url": "https://fastapi.tiangolo.com/tutorial/body/#use-the-model",
+            "excerpt": "Inside of the function, you can access all the attributes of the model object directly:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    item_dict = item.dict()\n    if item.tax is not None:"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 22199.89
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "L’exemple cité montre item.price."
+      }
+    },
+    {
+      "id": "v03-scalar-query-with-body",
+      "split": "test",
+      "question": "Ma route reçoit un modèle Pydantic item et un autre paramètre q de type str. Si q est absent du chemin, d’où vient sa valeur ?",
+      "gold": [
+        "body/request-body-path-query-parameters",
+        "body/declare-it-as-a-parameter"
+      ],
+      "markers": [
+        [
+          "query",
+          "requête"
+        ],
+        [
+          "q"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "body/declare-it-as-a-parameter",
+            "body/request-body-path-query-parameters",
+            "body/import-pydantics-basemodel",
+            "body/use-the-model",
+            "query-params-str-validations/custom-validation"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 18.71
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "body/request-body-path-query-parameters",
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "sub-dependencies/second-dependency-dependable-and-dependant"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 23.25
+        },
+        "hybrid": {
+          "ids": [
+            "body/request-body-path-query-parameters",
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/use-annotated-in-the-type-for-the-q-parameter",
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.88
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "La valeur de `q` provient de la définition par défaut `= None` dans le paramètre `q: str | None = None`, qui est interprété comme un paramètre de requête (query parameter) car il est de type `str` et non un modèle Pydantic. FastAPI utilise cette valeur par défaut lorsque `q` n'est pas fourni dans le chemin de la requête.",
+        "citation_ids": [
+          "body/request-body-path-query-parameters",
+          "query-params-str-validations/alternative-old-query-as-the-default-value",
+          "query-params-str-validations/query-as-the-default-value-or-in-annotated"
+        ],
+        "citations": [
+          {
+            "id": "body/request-body-path-query-parameters",
+            "title": "Request Body · Request body + path + query parameters",
+            "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+            "excerpt": "* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**.\n\nFastAPI will know that the value of `q` is not required because of the default value `= None`."
+          },
+          {
+            "id": "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "title": "Query Parameters and String Validations · Alternative (old): Query as the default value",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#alternative-old-query-as-the-default-value",
+            "excerpt": "same purpose of defining that default value (at least for FastAPI).\n\nSo:\n\n```Python\nq: str | None = Query(default=None)\n```\n\n...makes the parameter optional, with a default value of `None`, the same as:\n\n```Python\nq: str | None = None\n```\n\nBut the `Query` version declares it explicitly as being a query parameter."
+          },
+          {
+            "id": "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "title": "Query Parameters and String Validations · Query as the default value or in Annotated",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-as-the-default-value-or-in-annotated",
+            "excerpt": "So, you would use (preferably):\n\n```Python\nq: Annotated[str, Query()] = \"rick\"\n```\n\n...or in older code bases you will find:\n\n```Python\nq: str = Query(default=\"rick\")\n```"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 29085.58
+      },
+      "qualitative_review": {
+        "verdict": "incorrect",
+        "notes": "La valeur vient de la chaîne de requête. Une valeur par défaut éventuelle s’applique quand q manque de cette chaîne, et non quand q manque du chemin."
+      }
+    },
+    {
+      "id": "v03-annotated-default",
+      "split": "test",
+      "question": "Avec Annotated et Query, dois-je indiquer la valeur par défaut dans Query ou après le signe égal du paramètre de ma fonction ?",
+      "gold": [
+        "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+        "query-params-str-validations/default-values"
+      ],
+      "markers": [
+        [
+          "du paramètre",
+          "de la fonction",
+          "signe égal",
+          " = "
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "query-params-str-validations/import-query-and-annotated",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/required-parameters",
+            "query-params-str-validations/exclude-parameters-from-openapi"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 5.85
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "query-params-str-validations/advantages-of-annotated",
+            "query-params-str-validations/understand-that-code",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 23.86
+        },
+        "hybrid": {
+          "ids": [
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/required-parameters",
+            "query-params-str-validations/import-query-and-annotated"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 24.63
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Non, tu ne dois pas indiquer la valeur par défaut dans `Query` lorsque tu l'utilises dans `Annotated`. La valeur par défaut doit être placée directement après le signe égal du paramètre de la fonction. Cela évite l'incohérence entre la valeur par défaut définie dans `Query` et celle du paramètre.",
+        "citation_ids": [
+          "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+          "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+          "query-params-str-validations/import-query-and-annotated"
+        ],
+        "citations": [
+          {
+            "id": "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "title": "Query Parameters and String Validations · Query as the default value or in Annotated",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-as-the-default-value-or-in-annotated",
+            "excerpt": "Keep in mind that when using `Query` inside of `Annotated` you cannot use the `default` parameter for `Query`.\n\nInstead, use the actual default value of the function parameter. Otherwise, it would be inconsistent.\n\nFor example, this is not allowed:\n\n```Python\nq: Annotated[str, Query(default=\"rick\")] = \"morty\"\n```\n\n...because it's not clear if the default value should be `\"rick\"` or `\"morty\"`."
+          },
+          {
+            "id": "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "title": "Query Parameters and String Validations · Add Query to Annotated in the q parameter",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-query-to-annotated-in-the-q-parameter",
+            "excerpt": "Now that we have this `Annotated` where we can put more information (in this case some additional validation), add `Query` inside of `Annotated`, and set the parameter `max_length` to `50`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(max_length=50)] = None):"
+          },
+          {
+            "id": "query-params-str-validations/import-query-and-annotated",
+            "title": "Query Parameters and String Validations · Import Query and Annotated",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#import-query-and-annotated",
+            "excerpt": "To achieve that, first import:\n\n* `Query` from `fastapi`\n* `Annotated` from `typing`\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(max_length=50)] = None):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 30717.83
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "La règle et l’exemple cités placent la valeur par défaut sur le paramètre de fonction."
+      }
+    },
+    {
+      "id": "v03-hidden-query",
+      "split": "test",
+      "question": "Quel paramètre de Query permet de garder un paramètre utilisable tout en le retirant de la documentation OpenAPI ?",
+      "gold": [
+        "query-params-str-validations/exclude-parameters-from-openapi"
+      ],
+      "markers": [
+        [
+          "include_in_schema"
+        ],
+        [
+          "false"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/exclude-parameters-from-openapi",
+            "dependencies/integrated-with-openapi_1",
+            "query-params-str-validations/declare-more-metadata",
+            "body/results",
+            "query-params-str-validations/alternative-old-query-as-the-default-value"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 4.72
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/exclude-parameters-from-openapi",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/deprecating-parameters",
+            "query-params-str-validations/additional-validation"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 55.3
+        },
+        "hybrid": {
+          "ids": [
+            "query-params-str-validations/exclude-parameters-from-openapi",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/declare-more-metadata",
+            "query-params-str-validations/deprecating-parameters"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 20.27
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Le paramètre `include_in_schema` de `Query` permet de garder un paramètre utilisable tout en le retirant de la documentation OpenAPI.",
+        "citation_ids": [
+          "query-params-str-validations/exclude-parameters-from-openapi"
+        ],
+        "citations": [
+          {
+            "id": "query-params-str-validations/exclude-parameters-from-openapi",
+            "title": "Query Parameters and String Validations · Exclude parameters from OpenAPI",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#exclude-parameters-from-openapi",
+            "excerpt": "To exclude a query parameter from the generated OpenAPI schema (and thus, from the automatic documentation systems), set the parameter `include_in_schema` of `Query` to `False`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    hidden_query: Annotated[str | None, Query(include_in_schema=False)] = None,\n):\n    if hidden_query:"
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": false,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 19538.7
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "Le nom de l’argument demandé est exact. La valeur False est dans le passage et aurait rendu la réponse plus directement utilisable."
+      }
+    },
+    {
+      "id": "v03-historical-regex",
+      "split": "test",
+      "question": "Avant Pydantic 2 et FastAPI 0.100.0, comment s’appelait l’argument de Query qui correspond au nouveau pattern ?",
+      "gold": [
+        "query-params-str-validations/pydantic-v1-regex-instead-of-pattern"
+      ],
+      "markers": [
+        [
+          "regex"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "query-params-str-validations/add-regular-expressions",
+            "query-params-str-validations/deprecating-parameters",
+            "query-params-str-validations/recap",
+            "dependencies/create-a-dependency-or-dependable"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 5.88
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "query-params-str-validations/add-regular-expressions",
+            "body/request-body-path-query-parameters",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/alternative-old-query-as-the-default-value"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 12.25
+        },
+        "hybrid": {
+          "ids": [
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "query-params-str-validations/add-regular-expressions",
+            "body/request-body-path-query-parameters",
+            "body/declare-it-as-a-parameter",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.81
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Avant Pydantic 2 et FastAPI 0.100.0, l’argument de `Query` s’appelait `regex`. Pour migrer vers les versions récentes, utilise `pattern`.",
+        "citation_ids": [
+          "query-params-str-validations/pydantic-v1-regex-instead-of-pattern"
+        ],
+        "citations": [
+          {
+            "id": "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "title": "Query Parameters and String Validations · Pydantic v1 regex instead of pattern",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-regular-expressions",
+            "excerpt": "Before Pydantic version 2 and before FastAPI 0.100.0, the parameter was called `regex` instead of `pattern`, but it's now deprecated."
+          }
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": false,
+        "model_attempts": 0,
+        "client_latency_ms": 8.96
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "notes": "Le passage associe explicitement regex aux anciennes versions et pattern aux récentes."
+      }
+    },
+    {
+      "id": "v03-private-http-count",
+      "split": "test",
+      "question": "Combien de réponses HTTP 500 notre API a-t-elle renvoyées sur le serveur hier ?",
+      "gold": [],
+      "markers": [],
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation ne donne pas accès aux données de ton environnement.",
+        "citation_ids": [],
+        "citations": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": false,
+        "model_attempts": 0,
+        "client_latency_ms": 3.29
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "notes": "Les compteurs d’une instance réelle ne sont pas dans la documentation."
+      }
+    },
+    {
+      "id": "v03-private-db-host",
+      "split": "test",
+      "question": "Quelle adresse de base de données est utilisée dans notre cluster de préproduction ?",
+      "gold": [],
+      "markers": [],
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation ne donne pas accès aux données de ton environnement.",
+        "citation_ids": [],
+        "citations": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": false,
+        "model_attempts": 0,
+        "client_latency_ms": 3.16
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "notes": "La configuration du cluster relève de l’environnement privé."
+      }
+    },
+    {
+      "id": "v03-outside-observation",
+      "split": "test",
+      "question": "De quelle couleur est la chemise que porte mon collègue au bureau aujourd’hui ?",
+      "gold": [],
+      "markers": [],
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "citations": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": false,
+        "model_attempts": 0,
+        "client_latency_ms": 8.75
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "notes": "La documentation ne peut pas renseigner cette observation."
+      }
+    },
+    {
+      "id": "v03-angular-interceptor",
+      "split": "test",
+      "question": "Comment définir un intercepteur Angular qui ajoute un en-tête à toutes les requêtes de mon client ?",
+      "gold": [],
+      "markers": [],
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "citations": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "model_attempts": 1,
+        "client_latency_ms": 19089.43
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "notes": "Les intercepteurs Angular sont hors du corpus."
+      }
+    },
+    {
+      "id": "v03-fake-trim",
+      "split": "test",
+      "question": "Quelle valeur de trim faut-il passer à Query(trim=...) selon la documentation FastAPI pour supprimer automatiquement les espaces ?",
+      "gold": [],
+      "markers": [],
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "citations": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "model_attempts": 2,
+        "client_latency_ms": 50669.9
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "notes": "Le corpus ne documente pas cet argument Query."
+      }
+    }
+  ],
+  "runtime": {
+    "commit": "3c5413a",
+    "model_state_before": "2026-11-23T13:15:15.214053336Z 0",
+    "cache_mib": 256,
+    "model_state_after": "2026-11-23T13:15:15.214053336Z 0",
+    "current_bytes": 3014053888,
+    "peak_bytes": 3213070336,
+    "model": "Qwen3-4B-Instruct-2507 Q4_K_M",
+    "inference": "llama.cpp CPU sur Docker Desktop",
+    "version": "0.3.0",
+    "review_method": "Relecture par l’assistant en comparant chaque réponse aux extraits affichés et au corpus figé."
+  },
+  "regressions": [
+    {
+      "id": "v02-global-deps",
+      "question": "Comment imposer une vérification commune à toutes les routes dès la construction de l’application FastAPI ?",
+      "result": {
+        "status": "answered",
+        "answer": "Au niveau de l’application, passe la liste `dependencies` au constructeur `FastAPI`. L’exemple de la documentation utilise `app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])`.",
+        "citations": [
+          {
+            "id": "global-dependencies/intro",
+            "title": "Global Dependencies",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/#global-dependencies",
+            "excerpt": "app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])"
+          }
+        ],
+        "latency_ms": 8.51,
+        "model_called": false,
+        "model_attempts": 0
+      },
+      "latency_ms": 77.66
+    },
+    {
+      "id": "v02-yield-order",
+      "question": "Si une dépendance A utilise une dépendance B et que toutes deux utilisent yield, dans quel ordre leurs blocs de nettoyage s’exécutent-ils ?",
+      "result": {
+        "status": "answered",
+        "answer": "FastAPI nettoie `A` avant `B`. La ressource `B` doit rester disponible jusqu’à la fin du nettoyage de `A`.",
+        "citations": [
+          {
+            "id": "dependencies-with-yield/sub-dependencies-with-yield",
+            "title": "Dependencies with yield · Sub-dependencies with yield",
+            "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#sub-dependencies-with-yield",
+            "excerpt": "In this case `dependency_c`, to execute its exit code, needs the value from `dependency_b` (here named `dep_b`) to still be available.\n\nAnd, in turn, `dependency_b` needs the value from `dependency_a` (here named `dep_a`) to be available for its exit code."
+          }
+        ],
+        "latency_ms": 7.76,
+        "model_called": false,
+        "model_attempts": 0
+      },
+      "latency_ms": 26.35
+    },
+    {
+      "id": "v02-dump-model",
+      "question": "Quel appel permet de convertir en dictionnaire une instance du modèle Pydantic reçu par la route ?",
+      "result": {
+        "status": "answered",
+        "answer": "L'appel `.model_dump()` permet de convertir en dictionnaire une instance du modèle Pydantic reçu par la route.",
+        "citations": [
+          {
+            "id": "body/use-the-model",
+            "title": "Request Body · Use the model",
+            "url": "https://fastapi.tiangolo.com/tutorial/body/#use-the-model",
+            "excerpt": "price_with_tax = item.price + item.tax\n        item_dict.update({\"price_with_tax\": price_with_tax})\n    return item_dict\n```\n\nIn Pydantic v1 the method was called `.dict()`, it was deprecated (but still supported) in Pydantic v2, and renamed to `.model_dump()`.\n\nThe examples here use `.dict()` for compatibility with Pydantic v1, but you should use `.model_dump()` instead if you can use Pydantic v2."
+          }
+        ],
+        "latency_ms": 29142.26,
+        "model_called": true,
+        "model_attempts": 1
+      },
+      "latency_ms": 29162.6
+    },
+    {
+      "id": "v02-query-pattern-migration",
+      "question": "Mon code Pydantic v1 passe regex à Query. Quel nom d’argument dois-je utiliser quand je mets cette validation à jour ?",
+      "result": {
+        "status": "answered",
+        "answer": "Avant Pydantic 2 et FastAPI 0.100.0, l’argument de `Query` s’appelait `regex`. Pour migrer vers les versions récentes, utilise `pattern`.",
+        "citations": [
+          {
+            "id": "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+            "title": "Query Parameters and String Validations · Pydantic v1 regex instead of pattern",
+            "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-regular-expressions",
+            "excerpt": "Before Pydantic version 2 and before FastAPI 0.100.0, the parameter was called `regex` instead of `pattern`, but it's now deprecated."
+          }
+        ],
+        "latency_ms": 11.79,
+        "model_called": false,
+        "model_attempts": 0
+      },
+      "latency_ms": 16.16
+    },
+    {
+      "id": "test-my-tests",
+      "question": "Quel pourcentage de mes tests async pytest a réussi sur notre serveur la semaine dernière ?",
+      "result": {
+        "status": "abstained",
+        "answer": "La documentation ne donne pas accès aux données de ton environnement.",
+        "citations": [],
+        "latency_ms": 0.04,
+        "model_called": false,
+        "model_attempts": 0
+      },
+      "latency_ms": 7.22
+    }
+  ]
+}

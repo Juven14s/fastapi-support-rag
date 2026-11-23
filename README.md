@@ -28,15 +28,37 @@ $env:ANALYTICS_MODEL_OFFLINE = '1'
 1. Le corpus contient 113 sections de onze pages de FastAPI 0.121.3. Le générateur résout les exemples de code au même commit que la documentation et conserve les URL de section. [Instantané officiel](https://github.com/fastapi/fastapi/tree/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs)
 2. Une recherche BM25 par mots-clés sert de référence. Le modèle multilingue E5 calcule les embeddings en local sur CPU avec ONNX. Le mode hybride ajoute des termes techniques anglais à la question et combine les rangs des deux recherches. [Modèle E5](https://huggingface.co/intfloat/multilingual-e5-small) · [Poids ONNX utilisés](https://huggingface.co/Xenova/multilingual-e5-small/tree/761b726dd34fb83930e26aab4e9ac3899aa1fa78)
 3. L’assistant s’abstient avant d’appeler Qwen quand la question demande des données privées sur une instance. Pour les autres questions, il sélectionne des extraits courts et vérifie les identifiants de citation, les chiffres et certains attributs d’API avant d’afficher la réponse.
-4. Une similarité entre 0,80 et 0,83 ou une question sur une version ou l’ordre du nettoyage avec `yield` peut déclencher une seconde lecture par Qwen. Pour des formulations explicites, le service peut aussi répondre directement à partir de trois passages précis du corpus sur l’ordre de nettoyage, les dépendances globales et le passage de `regex` à `pattern`.
+4. Une similarité entre 0,80 et 0,83 ou une question sur une version ou le nettoyage avec `yield` peut déclencher une seconde lecture par Qwen. Pour des formulations explicites, le service répond directement à partir des passages sur les dépendances globales, le nettoyage avec `yield`, le passage de `regex` à `pattern` et la provenance des paramètres hors du chemin.
 
 Le corpus provient de la documentation FastAPI sous licence MIT. Le texte de la licence et l’attribution sont inclus dans [LICENSE.fastapi.txt](support_rag/data/LICENSE.fastapi.txt).
 
 ## Vérifier les résultats
 
-Les 32 questions d’évaluation sont divisées en 12 cas de développement et 20 cas de test. Le runner mesure séparément si le passage attendu apparaît dans les premiers résultats, si la réponse cite une source attendue, si des termes essentiels sont présents et si le système s’abstient hors corpus. La présence de termes sert d’indicateur automatique. Une lecture humaine reste nécessaire pour évaluer l’exactitude complète et la qualité des explications.
+Le premier jeu d’évaluation contient 12 cas de développement et 20 cas de test. Le runner mesure séparément si le passage attendu apparaît dans les premiers résultats, si la réponse cite une source attendue, si des termes essentiels sont présents et si le système s’abstient hors corpus. La présence de termes sert d’indicateur automatique. La relecture des réponses et des passages affichés permet d’évaluer l’exactitude complète et la qualité des explications.
 
 Sur les 9 questions de développement qui ont une réponse dans le corpus, le passage attendu est apparu dans les cinq premiers résultats 5 fois avec BM25, 5 fois avec les embeddings seuls et 9 fois avec la recherche hybride. Ces cas ont servi au réglage.
+
+## Résultats de la version 0.3
+
+L’[évaluation réservée de la version 0.3.0](evaluation/cases-0.3.json) couvre 20 questions inédites sur le commit `3c5413a`, avec Qwen sur CPU et un cache plafonné à 256 Mio.
+
+| Mesure | Résultat |
+|---|---:|
+| Section attendue parmi les cinq premiers résultats en recherche hybride | 15/15 |
+| Réponse correcte après relecture | 13/15 |
+| Abstention sur une question hors corpus | 5/5 |
+| Latence médiane sur les 20 appels | 20,1 s |
+| Latence médiane sur les 15 questions qui ont sollicité Qwen | 26,9 s |
+| Latence au 95e percentile | 65,6 s |
+| Erreurs techniques et redémarrages pendant le test | 0 |
+
+Quatre questions ont demandé un second appel à Qwen. La relecture a trouvé deux réponses incorrectes malgré une citation pertinente. La première inversait le moment du nettoyage par défaut avec `yield`. La seconde confondait un paramètre lu dans l’URL avec son éventuelle valeur par défaut. Les mesures des versions 0.2 et 0.3 proviennent de groupes de questions différents. Le [rapport complet de la version 0.3.0](evaluation/results-0.3.json) conserve les réponses, les extraits affichés et les verdicts.
+
+La version **0.3.1** traite ces deux situations à partir du passage correspondant quand la question est explicite. Les deux questions rejouées et les six nouvelles formulations ont obtenu une réponse correcte et citée. Ces huit réponses ont été produites sans appel à Qwen. Le [rapport ciblé de la version 0.3.1](evaluation/results-0.3.1.json) détaille ces vérifications. Les chiffres de latence ci-dessus concernent la campagne complète de la version 0.3.0.
+
+```powershell
+.\.venv\Scripts\python.exe scripts/evaluate.py --cases-file evaluation/cases-0.3.1.json --split test --timeout 180 --output artifacts/evaluation-0.3.1.json
+```
 
 ## Résultats de la version 0.2
 
