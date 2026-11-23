@@ -1,0 +1,1340 @@
+{
+  "summary": {
+    "selected_cases": 20,
+    "answerable_cases": 15,
+    "unanswerable_cases": 5,
+    "k": 5,
+    "retrieval": {
+      "lexical": {
+        "hit_at_k": {
+          "successes": 12,
+          "total": 15,
+          "rate": 0.8
+        },
+        "mrr_at_k": 0.5555555555555556,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 5.4,
+          "p95": 115.88
+        }
+      },
+      "dense": {
+        "hit_at_k": {
+          "successes": 12,
+          "total": 15,
+          "rate": 0.8
+        },
+        "mrr_at_k": 0.4911111111111111,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 14.9,
+          "p95": 67786.95
+        }
+      },
+      "hybrid": {
+        "hit_at_k": {
+          "successes": 13,
+          "total": 15,
+          "rate": 0.8666666666666667
+        },
+        "mrr_at_k": 0.7466666666666666,
+        "errors": 0,
+        "client_latency_ms": {
+          "measured": 15,
+          "median": 11.7,
+          "p95": 23.15
+        }
+      }
+    },
+    "answers": {
+      "answered_when_answerable": {
+        "successes": 13,
+        "total": 15,
+        "rate": 0.8666666666666667
+      },
+      "expected_citation": {
+        "successes": 12,
+        "total": 15,
+        "rate": 0.8
+      },
+      "all_answer_markers": {
+        "successes": 11,
+        "total": 15,
+        "rate": 0.7333333333333333
+      },
+      "abstained_when_unsupported": {
+        "successes": 4,
+        "total": 5,
+        "rate": 0.8
+      },
+      "answers_with_invalid_citations": 0,
+      "model_calls": 20,
+      "errors": 0,
+      "client_latency_ms": {
+        "measured": 20,
+        "median": 43300.4,
+        "p95": 57890.69
+      }
+    },
+    "split": "test",
+    "corpus_revision": "325fd16d32fd815633d6caf3d0d75aa7f30c51c9",
+    "evaluated_commit": "00eb263",
+    "initial_answer_errors": 16,
+    "recovery_batch_size": 4,
+    "qualitative_review": {
+      "documented": {
+        "correct": 11,
+        "incorrect": 1,
+        "partial": 1,
+        "missed_answer": 2
+      },
+      "outside_corpus": {
+        "appropriate_abstention": 4,
+        "unsupported_answer": 1
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "test-new-value",
+      "split": "test",
+      "question": "Je veux recalculer ma sous-dépendance à chaque utilisation au sein de la même requête. Quelle option faut-il passer à Depends ?",
+      "gold": [
+        "sub-dependencies/using-the-same-dependency-multiple-times"
+      ],
+      "markers": [
+        [
+          "use_cache=False",
+          "use_cache = False"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies/import-depends",
+            "dependencies/declare-the-dependency-in-the-dependant",
+            "sub-dependencies/second-dependency-dependable-and-dependant",
+            "sub-dependencies/first-dependency-dependable",
+            "dependencies-in-path-operation-decorators/raise-exceptions"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 28.17
+        },
+        "dense": {
+          "ids": [
+            "sub-dependencies/first-dependency-dependable",
+            "dependencies/import-depends",
+            "sub-dependencies/using-the-same-dependency-multiple-times",
+            "dependencies/declare-the-dependency-in-the-dependant",
+            "sub-dependencies/second-dependency-dependable-and-dependant"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 12.42
+        },
+        "hybrid": {
+          "ids": [
+            "sub-dependencies/using-the-same-dependency-multiple-times",
+            "sub-dependencies/first-dependency-dependable",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "sub-dependencies/use-the-dependency",
+            "dependencies-with-yield/sub-dependencies-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 10.19
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Passer l'option `use_cache=False` dans `Depends`.",
+        "citation_ids": [
+          "sub-dependencies/using-the-same-dependency-multiple-times"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 41460.17
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La réponse donne Depends(..., use_cache=False), confirmé par la section citée."
+      }
+    },
+    {
+      "id": "test-dependency-alias",
+      "split": "test",
+      "question": "Plusieurs routes répètent la même annotation Annotated avec Depends. Puis-je la factoriser dans un alias de type ?",
+      "gold": [
+        "dependencies/share-annotated-dependencies"
+      ],
+      "markers": [
+        [
+          "Annotated"
+        ],
+        [
+          "Depends"
+        ],
+        [
+          "alias",
+          "variable",
+          "affecter",
+          "réutilis"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies/share-annotated-dependencies",
+            "query-params-str-validations/use-annotated-in-the-type-for-the-q-parameter",
+            "query-params-str-validations/alias-parameters",
+            "dependencies/import-depends",
+            "sub-dependencies/second-dependency-dependable-and-dependant"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 4.65
+        },
+        "dense": {
+          "ids": [
+            "dependencies/import-depends",
+            "dependencies/share-annotated-dependencies",
+            "dependencies/create-a-dependency-or-dependable",
+            "dependencies-in-path-operation-decorators/raise-exceptions",
+            "dependencies/declare-the-dependency-in-the-dependant"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 25.12
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies/share-annotated-dependencies",
+            "dependencies/import-depends",
+            "dependencies/declare-the-dependency-in-the-dependant",
+            "dependencies-in-path-operation-decorators/raise-exceptions",
+            "dependencies/create-a-dependency-or-dependable"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.4
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Oui, vous pouvez factoriser l'annotation Annotated avec Depends dans un alias de type. Par exemple, en créant une variable comme `CommonsDep = Annotated[dict, Depends(common_parameters)]` et l'utiliser dans plusieurs routes.",
+        "citation_ids": [
+          "dependencies/share-annotated-dependencies"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 47224.01
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La section montre un alias Annotated avec Depends réutilisé dans plusieurs routes."
+      }
+    },
+    {
+      "id": "test-session-cleanup",
+      "split": "test",
+      "question": "Je fournis une session de base à ma route via une dépendance. Que mettre avant et après yield pour ouvrir puis fermer la session ?",
+      "gold": [
+        "dependencies-with-yield/a-database-dependency-with-yield"
+      ],
+      "markers": [
+        [
+          "yield"
+        ],
+        [
+          "créer",
+          "ouvrir",
+          "avant",
+          "DBSession()"
+        ],
+        [
+          "fermer",
+          "close"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies-with-yield/a-database-dependency-with-yield",
+            "async-tests/run-it",
+            "dependencies/share-annotated-dependencies",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/using-context-managers-in-dependencies-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 4.04
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/a-database-dependency-with-yield",
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/sub-dependencies-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 13.28
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/a-database-dependency-with-yield",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/scope-for-sub-dependencies"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 10.33
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Avant le `yield`, mettez le code d'ouverture de la session (par exemple, `db = DBSession()`). Après le `yield`, mettez le code de fermeture de la session (par exemple, `db.close()`) dans un `finally`.",
+        "citation_ids": [
+          "dependencies-with-yield/a-database-dependency-with-yield"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 52053.24
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "L’exemple cité ouvre la session avant yield et la ferme dans finally."
+      }
+    },
+    {
+      "id": "test-reraise",
+      "split": "test",
+      "question": "Dans le bloc except d’une dépendance utilisant yield, comment faire remonter l’exception d’origine après l’avoir journalisée ?",
+      "gold": [
+        "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+      ],
+      "markers": [
+        [
+          "raise",
+          "relancer",
+          "relever"
+        ],
+        [
+          "except"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies-with-yield/dependencies-with-yield-and-except",
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 35.46
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 82.91
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-with-yield/a-dependency-with-yield-and-try",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/dependencies-with-yield-and-except",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 11.66
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour remonter l'exception d'origine après l'avoir journalisée dans un bloc except d'une dépendance utilisant yield, il faut la relancer explicitement (par exemple en levant une instance de `HTTPException`). Si l'exception n'est pas relancée, FastAPI ne détecte pas l'erreur et ne la journalise pas, ce qui entraîne un HTTP 500 sans logs.",
+        "citation_ids": [
+          "dependencies-with-yield/dependencies-with-yield-and-except",
+          "dependencies-with-yield/dependencies-with-yield-and-httpexception"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 43552.59
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "incorrect",
+        "cited_section_support": "insufficient",
+        "explanation_fr": "La réponse propose une nouvelle HTTPException. Il faut un raise sans argument pour relancer l’exception d’origine."
+      }
+    },
+    {
+      "id": "test-restore-dependencies",
+      "split": "test",
+      "question": "Mes doublures de test persistent sur les routes suivantes. Comment réinitialiser en une fois les substitutions de dépendances de l’application FastAPI ?",
+      "gold": [
+        "testing-dependencies/use-the-app-dependency-overrides-attribute"
+      ],
+      "markers": [
+        [
+          "app.dependency_overrides"
+        ],
+        [
+          "{}",
+          "dictionnaire vide",
+          "vider",
+          ".clear("
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "async-tests/httpx",
+            "async-tests/intro",
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "testing/extended-testing-file",
+            "testing/separating-tests"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 115.88
+        },
+        "dense": {
+          "ids": [
+            "sub-dependencies/use-the-dependency",
+            "dependencies/create-a-dependency-or-dependable",
+            "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+            "dependencies/import-depends",
+            "dependencies-with-yield/sub-dependencies-with-yield"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 131.55
+        },
+        "hybrid": {
+          "ids": [
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "sub-dependencies/use-the-dependency",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies/create-a-dependency-or-dependable"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 15.44
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour réinitialiser en une fois les substitutions de dépendances de l'application FastAPI, il suffit de définir `app.dependency_overrides = {}`.",
+        "citation_ids": [
+          "testing-dependencies/use-the-app-dependency-overrides-attribute"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 106040.11
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La section donne app.dependency_overrides = {}."
+      }
+    },
+    {
+      "id": "test-mark-async",
+      "split": "test",
+      "question": "Avec pytest, quel décorateur recommandé permet d’exécuter mes fonctions de test déclarées async def ?",
+      "gold": [
+        "async-tests/pytest-mark-anyio",
+        "async-tests/in-detail",
+        "async-tests/example"
+      ],
+      "markers": [
+        [
+          "pytest.mark.anyio"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "async-tests/in-detail",
+            "async-tests/httpx",
+            "async-tests/pytest-mark-anyio",
+            "async-tests/example",
+            "testing/run-it"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 72.42
+        },
+        "dense": {
+          "ids": [
+            "testing/using-testclient",
+            "async-tests/httpx",
+            "async-tests/in-detail",
+            "async-tests/pytest-mark-anyio",
+            "async-tests/run-it"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 73.68
+        },
+        "hybrid": {
+          "ids": [
+            "async-tests/httpx",
+            "async-tests/in-detail",
+            "testing/using-testclient",
+            "async-tests/pytest-mark-anyio",
+            "async-tests/run-it"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 10.21
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "@pytest.mark.anyio",
+        "citation_ids": [
+          "async-tests/in-detail",
+          "async-tests/pytest-mark-anyio"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 25031.36
+      },
+      "initial_answer": {
+        "error": "timed out"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "Une section citée contient le marqueur @pytest.mark.anyio."
+      }
+    },
+    {
+      "id": "test-response-assertions",
+      "split": "test",
+      "question": "J’ai envoyé un GET avec le client de test. Comment vérifier que le statut vaut 200 et que le JSON retourné correspond à mon dictionnaire attendu ?",
+      "gold": [
+        "testing/testing-file",
+        "testing/extended-testing-file",
+        "async-tests/example"
+      ],
+      "markers": [
+        [
+          "status_code"
+        ],
+        [
+          "200"
+        ],
+        [
+          ".json()"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "async-tests/in-detail",
+            "testing/extended-testing-file",
+            "handling-errors/the-resulting-response",
+            "testing/testing-file"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 25.86
+        },
+        "dense": {
+          "ids": [
+            "testing/extended-testing-file",
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "handling-errors/the-resulting-response",
+            "handling-errors/override-request-validation-exceptions",
+            "query-params-str-validations/import-query-and-annotated"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 67786.95
+        },
+        "hybrid": {
+          "ids": [
+            "testing/extended-testing-file",
+            "testing-dependencies/use-the-app-dependency-overrides-attribute",
+            "handling-errors/the-resulting-response",
+            "handling-errors/override-request-validation-exceptions",
+            "async-tests/in-detail"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 11.71
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour vérifier que le statut vaut 200 et que le JSON retourné correspond à votre dictionnaire attendu, utilisez le `TestClient` de FastAPI et vérifiez les propriétés `status_code` et `json()` dans votre test. Par exemple : `assert response.status_code == 200` et `assert response.json() == {\"id\": \"foo\", \"title\": \"Foo\", \"description\": \"There goes my hero\"}`.",
+        "citation_ids": [
+          "testing/extended-testing-file"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 57890.69
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La section contient les deux assertions demandées sur le statut et le JSON."
+      }
+    },
+    {
+      "id": "test-helper-error",
+      "split": "test",
+      "question": "Si une fonction utilitaire appelée par une route détecte une ressource absente, comment interrompre la requête et produire une erreur 404 ?",
+      "gold": [
+        "handling-errors/raise-an-httpexception-in-your-code",
+        "handling-errors/use-httpexception"
+      ],
+      "markers": [
+        [
+          "HTTPException"
+        ],
+        [
+          "404"
+        ],
+        [
+          "raise",
+          "lever",
+          "lève"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "handling-errors/import-httpexception",
+            "handling-errors/raise-an-httpexception-in-your-code",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "handling-errors/add-custom-headers",
+            "handling-errors/the-resulting-response"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 4.05
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/raise-an-httpexception-in-your-code",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-in-path-operation-decorators/dependencies-errors-and-return-values",
+            "dependencies-with-yield/scope-for-sub-dependencies"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 12.56
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/raise-an-httpexception-in-your-code",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except",
+            "dependencies-with-yield/dependencies-with-yield-and-except",
+            "handling-errors/override-the-httpexception-error-handler"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 23.15
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour interrompre la requête et produire une erreur 404 lorsqu'une ressource est absente, il faut lever une exception `HTTPException` avec un code de statut 404 dans la fonction utilitaire appelée par la route. Par exemple, si l'ID d'un item n'existe pas dans les données, on peut lever une exception comme suit : `raise HTTPException(status_code=404, detail=\"Item not found\")`. Cela termine immédiatement la requête et envoie une réponse 404 au client.",
+        "citation_ids": [
+          "handling-errors/raise-an-httpexception-in-your-code"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 54866.04
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La documentation confirme que lever HTTPException depuis une fonction utilitaire interrompt la requête."
+      }
+    },
+    {
+      "id": "test-register-handler",
+      "split": "test",
+      "question": "Comment enregistrer un gestionnaire global qui transforme mon exception métier Python en une réponse HTTP JSON ?",
+      "gold": [
+        "handling-errors/install-custom-exception-handlers"
+      ],
+      "markers": [
+        [
+          "app.exception_handler"
+        ],
+        [
+          "JSONResponse"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/the-resulting-response",
+            "dependencies-in-path-operation-decorators/global-dependencies",
+            "handling-errors/override-the-default-exception-handlers",
+            "dependencies-with-yield/execution-of-dependencies-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 3.92
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/fastapis-httpexception-vs-starlettes-httpexception",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 9.47
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/install-custom-exception-handlers",
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/override-the-httpexception-error-handler",
+            "dependencies-with-yield/dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 8.97
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Enregistrez un gestionnaire global en utilisant `@app.exception_handler()` pour transformer une exception métier Python en une réponse HTTP JSON. Par exemple, avec une exception personnalisée comme `UnicornException`, vous pouvez créer un gestionnaire qui retourne un `JSONResponse` avec un code d'état et un message JSON.",
+        "citation_ids": [
+          "handling-errors/install-custom-exception-handlers"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 57105.52
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "partial",
+        "cited_section_support": "direct",
+        "explanation_fr": "La réponse omet la classe de l’exception dans le décorateur. La section donne @app.exception_handler(UnicornException)."
+      }
+    },
+    {
+      "id": "test-validation-handler",
+      "split": "test",
+      "question": "Quand le client envoie un paramètre invalide, je veux renvoyer mon propre format d’erreur. Quelle exception de validation de requête faut-il gérer ?",
+      "gold": [
+        "handling-errors/override-request-validation-exceptions",
+        "handling-errors/requestvalidationerror-vs-validationerror"
+      ],
+      "markers": [
+        [
+          "RequestValidationError"
+        ],
+        [
+          "exception_handler",
+          "gestionnaire"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/custom-validation",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/raise-an-httpexception-in-your-code",
+            "handling-errors/reuse-fastapis-exception-handlers"
+          ],
+          "first_expected_rank": 3,
+          "client_latency_ms": 4.61
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/requestvalidationerror-vs-validationerror",
+            "dependencies-with-yield/execution-of-dependencies-with-yield"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 12.16
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/requestvalidationerror-vs-validationerror",
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 11.73
+        }
+      },
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 43817.54
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "missed_answer",
+        "cited_section_support": "none",
+        "explanation_fr": "La réponse s’abstient. Les deux sections attendues étaient aux rangs 1 et 2 et documentent RequestValidationError."
+      }
+    },
+    {
+      "id": "test-detail-object",
+      "split": "test",
+      "question": "Puis-je placer un dictionnaire dans detail de la HTTPException de FastAPI, contrairement à la variante Starlette qui attend une chaîne ?",
+      "gold": [
+        "handling-errors/fastapis-httpexception-vs-starlettes-httpexception"
+      ],
+      "markers": [
+        [
+          "detail"
+        ],
+        [
+          "JSON",
+          "sérialis"
+        ],
+        [
+          "Starlette"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "handling-errors/fastapis-httpexception-vs-starlettes-httpexception",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/reuse-fastapis-exception-handlers",
+            "handling-errors/import-httpexception"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 5.44
+        },
+        "dense": {
+          "ids": [
+            "handling-errors/fastapis-httpexception-vs-starlettes-httpexception",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/install-custom-exception-handlers",
+            "testing/intro",
+            "handling-errors/override-request-validation-exceptions"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 28.6
+        },
+        "hybrid": {
+          "ids": [
+            "handling-errors/fastapis-httpexception-vs-starlettes-httpexception",
+            "handling-errors/override-the-httpexception-error-handler",
+            "handling-errors/override-request-validation-exceptions",
+            "handling-errors/install-custom-exception-handlers",
+            "testing/intro"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 14.25
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Oui, vous pouvez placer un dictionnaire dans le champ `detail` de l'exception `HTTPException` de FastAPI, contrairement à Starlette qui ne le permet pas.",
+        "citation_ids": [
+          "handling-errors/fastapis-httpexception-vs-starlettes-httpexception"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 40565.57
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La réponse distingue le dictionnaire accepté par HTTPException de FastAPI du détail textuel de Starlette. La vérification par mots-clés est plus stricte que la question."
+      }
+    },
+    {
+      "id": "test-query-pattern",
+      "split": "test",
+      "question": "Avec Query, comment imposer une expression régulière au paramètre de recherche d’une route ?",
+      "gold": [
+        "query-params-str-validations/add-regular-expressions"
+      ],
+      "markers": [
+        [
+          "Query"
+        ],
+        [
+          "pattern"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/add-regular-expressions",
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "query-params-str-validations/alias-parameters",
+            "query-params-str-validations/query-parameter-list-multiple-values",
+            "query-params-str-validations/alternative-old-query-as-the-default-value"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 5.33
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/add-regular-expressions",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/query-parameter-list-multiple-values",
+            "query-params-str-validations/deprecating-parameters",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 14.91
+        },
+        "hybrid": {
+          "ids": [
+            "query-params-str-validations/add-regular-expressions",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/query-parameter-list-multiple-values",
+            "query-params-str-validations/deprecating-parameters",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 12.0
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Pour imposer une expression régulière au paramètre de recherche d'une route avec FastAPI, utilisez le paramètre `pattern` dans l'annotation `Query`. Par exemple : `q: Annotated[str | None, Query(pattern=\"^fixedquery$\")] = None`.",
+        "citation_ids": [
+          "query-params-str-validations/add-regular-expressions"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 57755.39
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La réponse donne Query(pattern=...), confirmé par la section citée."
+      }
+    },
+    {
+      "id": "test-required-query",
+      "split": "test",
+      "question": "Comment rendre le paramètre de requête q obligatoire tout en continuant à utiliser Query pour lui imposer une longueur maximale ?",
+      "gold": [
+        "query-params-str-validations/required-parameters"
+      ],
+      "markers": [
+        [
+          "Query"
+        ],
+        [
+          "sans valeur par défaut",
+          "aucune valeur par défaut",
+          "pas de valeur par défaut",
+          "ne pas ",
+          "omett"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+            "query-params-str-validations/alias-parameters",
+            "query-params-str-validations/query-parameter-list-multiple-values",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/exclude-parameters-from-openapi"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 6.08
+        },
+        "dense": {
+          "ids": [
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/additional-validation",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/add-more-validations",
+            "query-params-str-validations/required-parameters"
+          ],
+          "first_expected_rank": 5,
+          "client_latency_ms": 12.75
+        },
+        "hybrid": {
+          "ids": [
+            "query-params-str-validations/additional-validation",
+            "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+            "query-params-str-validations/alternative-old-query-as-the-default-value",
+            "query-params-str-validations/deprecating-parameters",
+            "query-params-str-validations/add-more-validations"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 13.86
+        }
+      },
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 31952.52
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "missed_answer",
+        "cited_section_support": "none",
+        "explanation_fr": "Le corpus indique d’omettre la valeur par défaut avec Annotated. La section attendue figurait au rang 5 en recherche dense et était absente des cinq résultats hybrides."
+      }
+    },
+    {
+      "id": "test-body-model",
+      "split": "test",
+      "question": "Quelle classe de base utiliser pour définir en Python les champs typés d’un objet reçu dans le corps de la requête ?",
+      "gold": [
+        "body/create-your-data-model"
+      ],
+      "markers": [
+        [
+          "BaseModel"
+        ],
+        [
+          "Pydantic"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies/share-annotated-dependencies",
+            "query-params-str-validations/use-annotated-in-the-type-for-the-q-parameter",
+            "body/results",
+            "query-params-str-validations/recap",
+            "handling-errors/add-custom-headers"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 6.22
+        },
+        "dense": {
+          "ids": [
+            "body/results",
+            "dependencies/import-depends",
+            "dependencies/share-annotated-dependencies",
+            "body/request-body-path-query-parameters",
+            "query-params-str-validations/pydantic-v1-regex-instead-of-pattern"
+          ],
+          "first_expected_rank": null,
+          "client_latency_ms": 9.77
+        },
+        "hybrid": {
+          "ids": [
+            "body/results",
+            "body/request-body-path-query-parameters",
+            "body/request-body-path-parameters",
+            "body/intro",
+            "body/create-your-data-model"
+          ],
+          "first_expected_rank": 5,
+          "client_latency_ms": 15.71
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "La classe de base à utiliser est `BaseModel`.",
+        "citation_ids": [
+          "body/request-body-path-query-parameters",
+          "body/create-your-data-model"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 37572.48
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "La classe demandée est BaseModel. Les sections citées donnent aussi son import depuis pydantic, absent de la réponse courte."
+      }
+    },
+    {
+      "id": "test-close-earlier",
+      "split": "test",
+      "question": "Je veux libérer une dépendance à yield dès la fin de la fonction de route, avant l’envoi de la réponse. Comment configurer Depends ?",
+      "gold": [
+        "dependencies-with-yield/early-exit-and-scope"
+      ],
+      "markers": [
+        [
+          "scope"
+        ],
+        [
+          "function"
+        ]
+      ],
+      "retrieval": {
+        "lexical": {
+          "ids": [
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except",
+            "dependencies-with-yield/dependencies-with-yield-and-except",
+            "dependencies-with-yield/dependencies-with-yield-and-httpexception"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 4.77
+        },
+        "dense": {
+          "ids": [
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/a-database-dependency-with-yield"
+          ],
+          "first_expected_rank": 2,
+          "client_latency_ms": 15.26
+        },
+        "hybrid": {
+          "ids": [
+            "dependencies-with-yield/early-exit-and-scope",
+            "dependencies-with-yield/scope-for-sub-dependencies",
+            "dependencies-with-yield/sub-dependencies-with-yield",
+            "dependencies-with-yield/execution-of-dependencies-with-yield",
+            "dependencies-with-yield/a-database-dependency-with-yield"
+          ],
+          "first_expected_rank": 1,
+          "client_latency_ms": 15.58
+        }
+      },
+      "answer": {
+        "status": "answered",
+        "answer": "Utilisez `Depends(scope=\"function\")` pour libérer la dépendance à `yield` dès la fin de la fonction de route, avant l'envoi de la réponse. Cela permet de fermer la dépendance après la fin de la fonction de route mais avant l'envoi de la réponse au client.",
+        "citation_ids": [
+          "dependencies-with-yield/early-exit-and-scope"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": true,
+        "all_markers_found": true,
+        "model_called": true,
+        "client_latency_ms": 50608.0
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "correct",
+        "cited_section_support": "direct",
+        "explanation_fr": "Depends(scope=\"function\") termine la dépendance avant l’envoi de la réponse, comme l’explique la section citée."
+      }
+    },
+    {
+      "id": "test-production-secret",
+      "split": "test",
+      "question": "Donne le vrai mot de passe de la base utilisée par l’exemple de dépendance à yield dans notre environnement de production.",
+      "gold": [],
+      "markers": [],
+      "reason": "Un exemple de code ne fournit aucun accès aux informations privées de production.",
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 41704.26
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "cited_section_support": "not_applicable",
+        "explanation_fr": "Les exemples génériques ne fournissent aucun identifiant réel de production."
+      }
+    },
+    {
+      "id": "test-kubernetes",
+      "split": "test",
+      "question": "Quelle valeur de storageClassName mon équipe a-t-elle imposée sur le cluster Kubernetes de production ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Configuration interne et sujet absents du corpus.",
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 43048.15
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "cited_section_support": "not_applicable",
+        "explanation_fr": "La documentation indexée ne contient pas la configuration interne du cluster."
+      }
+    },
+    {
+      "id": "test-fake-setting",
+      "split": "test",
+      "question": "Quelle est la valeur par défaut de app.dependency_overrides_timeout pour annuler automatiquement une substitution de dépendance après un test ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Le guide documente app.dependency_overrides et sa réinitialisation, sans délai nommé dependency_overrides_timeout.",
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 33548.62
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "cited_section_support": "not_applicable",
+        "explanation_fr": "La documentation du remplacement de dépendance ne définit pas le réglage inventé dans la question."
+      }
+    },
+    {
+      "id": "test-unrelated-app",
+      "split": "test",
+      "question": "Dans LibreOffice Calc, comment figer la première colonne d’un classeur ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Application sans rapport avec le corpus FastAPI.",
+      "retrieval": {},
+      "answer": {
+        "status": "abstained",
+        "answer": "La documentation indexée ne contient pas assez d’éléments pour répondre.",
+        "citation_ids": [],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 30712.99
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "appropriate_abstention",
+        "cited_section_support": "not_applicable",
+        "explanation_fr": "Le corpus FastAPI n’explique pas comment figer une colonne dans LibreOffice Calc."
+      }
+    },
+    {
+      "id": "test-my-tests",
+      "split": "test",
+      "question": "Quel pourcentage de mes tests async pytest a réussi sur notre serveur la semaine dernière ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Le corpus ne contient pas les résultats du serveur ni les données du projet de l’utilisateur.",
+      "retrieval": {},
+      "answer": {
+        "status": "answered",
+        "answer": "100%",
+        "citation_ids": [
+          "testing/run-it"
+        ],
+        "invalid_citation_ids": [],
+        "expected_citation": false,
+        "all_markers_found": false,
+        "model_called": true,
+        "client_latency_ms": 35584.87
+      },
+      "initial_answer": {
+        "error": "HTTP Error 503: Service Unavailable"
+      },
+      "qualitative_review": {
+        "verdict": "unsupported_answer",
+        "cited_section_support": "insufficient",
+        "explanation_fr": "La réponse invente un taux de 100 %. La section citée montre une sortie pytest d’exemple et ne renseigne pas le serveur ni la période de la question."
+      }
+    }
+  ],
+  "benchmark_configuration": {
+    "llm": "Qwen3-4B-Instruct-2507",
+    "quantization": "Q4_K_M",
+    "llm_weights_revision": "a06e946bb6b655725eafa393f4a9745d460374c9",
+    "runtime": "llama.cpp CPU on Docker Desktop",
+    "cpu_threads": 6,
+    "context_size": 4096,
+    "temperature": 0,
+    "initial_aborted_answers": 16,
+    "recovery": "Identical model restarted; retried technical failures in batches of four.",
+    "latency": "HTTP round trip for the completed attempts; excludes failed attempts and restarts.",
+    "qualitative_review": "Assistant review against the full cited sections and the frozen corpus.",
+    "independent_retrieval": "Sections and ranks cross-checked against the same native Windows index."
+  }
+}

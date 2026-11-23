@@ -35,7 +35,24 @@ Les 32 questions d’évaluation sont divisées en 12 cas de développement et 2
 
 Sur les 9 questions de développement qui ont une réponse dans le corpus, le passage attendu est apparu dans les cinq premiers résultats 5 fois avec BM25, 5 fois avec les embeddings seuls et 9 fois avec la recherche hybride. Ces cas ont servi au réglage.
 
-Le premier essai de bout en bout a renvoyé les deux citations attendues pour deux questions documentées et une abstention pour une question sur SvelteKit. Sur ces trois appels locaux, la latence médiane était de 31 s. Les 20 questions du test final sont réservées à l’évaluation de la version stabilisée.
+## Résultats sur les questions de test
+
+Le test porte sur le commit `00eb263`, avec 15 questions documentées et 5 hors corpus, indépendantes des questions utilisées pour le réglage. Le modèle Qwen3 4B Instruct quantifié Q4_K_M tournait sur CPU avec llama.cpp.
+
+| Mesure | Résultat |
+|---|---:|
+| Section attendue dans les cinq premiers résultats, BM25 | 12/15 |
+| Section attendue dans les cinq premiers résultats, embeddings | 12/15 |
+| Section attendue dans les cinq premiers résultats, recherche hybride | 13/15 |
+| Réponse avec une citation attendue | 12/15 |
+| Réponse correcte après relecture | 11/15 |
+| Abstention sur une question hors corpus | 4/5 |
+| Latence médiane des 20 appels aboutis | 43,3 s |
+| Latence au 95e percentile des 20 appels aboutis | 57,9 s |
+
+La relecture des 15 questions documentées compte aussi une réponse partielle, une réponse incorrecte et deux abstentions injustifiées. Pour une question hors corpus sur les résultats de tests d’un serveur, l’assistant a répondu « 100 % » en prenant une sortie d’exemple pour un résultat réel. Le rapport vérifie le soutien des réponses au niveau des sections citées. Il conserve les identifiants de section et les textes générés.
+
+Le premier passage a produit 16 erreurs techniques lors d’une saturation de la mémoire Docker. Les cas en erreur ont ensuite abouti par lots de quatre, avec redémarrage ciblé du même modèle entre les lots. Les latences du tableau portent sur les appels aboutis. Les erreurs du premier passage et les verdicts détaillés restent consultables dans le [rapport JSON](evaluation/results-00eb263.json).
 
 ```powershell
 python -m venv .venv
