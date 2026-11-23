@@ -37,7 +37,30 @@ Les 32 questions d’évaluation sont divisées en 12 cas de développement et 2
 
 Sur les 9 questions de développement qui ont une réponse dans le corpus, le passage attendu est apparu dans les cinq premiers résultats 5 fois avec BM25, 5 fois avec les embeddings seuls et 9 fois avec la recherche hybride. Ces cas ont servi au réglage.
 
-## Résultats sur les questions de test
+## Résultats de la version 0.2
+
+L’[évaluation réservée de la version 0.2](evaluation/cases-0.2.json) utilise 20 nouvelles questions. Elle porte sur le commit `4f2925d` avec le même modèle Qwen local et un cache plafonné à 256 Mio.
+
+| Mesure | Résultat |
+|---|---:|
+| Section attendue parmi les cinq premiers résultats en recherche hybride | 14/15 |
+| Réponse correcte après relecture | 11/15 |
+| Abstention sur une question hors corpus | 5/5 |
+| Latence médiane sur les 20 appels | 19,2 s |
+| Latence médiane sur les 14 appels à Qwen | 22,8 s |
+| Latence au 95e percentile | 28,1 s |
+| Erreurs techniques et redémarrages pendant le test | 0 |
+| Pic mémoire du conteneur Qwen depuis son démarrage avec le plafond actif | 2,99 Gio |
+
+La relecture a aussi relevé une réponse partielle sur la migration de `regex` vers `pattern`, une erreur sur l’ordre de fermeture des dépendances `yield` et deux abstentions sur des questions documentées. Dans ces deux derniers cas, le seuil de pertinence a bloqué l’appel à Qwen alors que la section attendue figurait parmi les résultats. Le seuil a été réglé sur les cas de développement. Une question suffisamment proche du corpus peut donner lieu à une seconde génération avec des extraits plus larges si la première réponse ne passe pas le contrôle des citations.
+
+Les tests de régression retrouvent le `raise` sans argument et `RequestValidationError`. La demande de statistiques privées qui avait reçu « 100 % » s’arrête désormais avant le modèle. Le [rapport de la version 0.2](evaluation/results-0.2.json) conserve les réponses, les extraits effectivement affichés et les verdicts détaillés. Les deux versions ont été évaluées sur des groupes de questions différents.
+
+```powershell
+.\.venv\Scripts\python.exe scripts/evaluate.py --cases-file evaluation/cases-0.2.json --split test --output artifacts/evaluation-0.2.json
+```
+
+## Résultats de la version 0.1
 
 Le test porte sur le commit `00eb263`, avec 15 questions documentées et 5 hors corpus, indépendantes des questions utilisées pour le réglage. Le modèle Qwen3 4B Instruct quantifié Q4_K_M tournait sur CPU avec llama.cpp.
 
