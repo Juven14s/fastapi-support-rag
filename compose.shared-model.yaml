@@ -1,0 +1,13 @@
+services:
+  app:
+    depends_on: !reset {}
+    environment:
+      RAG_MODEL_URL: http://enterprise-agentic-analytics-model-1:8080/v1
+    networks:
+      - default
+      - sales-model
+
+networks:
+  sales-model:
+    external: true
+    name: enterprise-agentic-analytics_default

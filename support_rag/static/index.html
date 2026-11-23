@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Support FastAPI</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">?</span>
+        <span>Support FastAPI</span>
+      </div>
+      <a class="documentation-link" href="https://fastapi.tiangolo.com/" target="_blank"
+         rel="noopener noreferrer">
+        Documentation officielle <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="intro">
+      <h1>Une question sur FastAPI&nbsp;?</h1>
+      <p>Interroge la documentation sur les dépendances, les tests et la gestion des erreurs.</p>
+    </div>
+
+    <div class="workspace">
+      <form class="card question-card" id="question-form">
+        <label for="question">Ta question</label>
+        <textarea id="question" name="question" rows="3" minlength="3" maxlength="1000" required
+                  placeholder="Comment remplacer une dépendance pendant un test&nbsp;?"></textarea>
+        <div class="form-actions">
+          <span class="key-hint" aria-hidden="true"><kbd>Ctrl</kbd> + <kbd>Entrée</kbd></span>
+          <button type="submit" id="submit-question">Poser la question <span aria-hidden="true">→</span></button>
+        </div>
+        <p class="request-error" id="request-error" role="alert" hidden></p>
+      </form>
+
+      <section class="card examples" aria-labelledby="examples-title">
+        <h2 id="examples-title">Questions à essayer</h2>
+        <ul>
+          <li><button type="button" class="example">Comment remplacer une dépendance pendant un test&nbsp;?</button></li>
+          <li><button type="button" class="example">Comment renvoyer une erreur HTTP personnalisée&nbsp;?</button></li>
+          <li><button type="button" class="example">Comment déclarer une dépendance avec <code>Depends</code>&nbsp;?</button></li>
+        </ul>
+      </section>
+    </div>
+
+    <p class="progress" role="status" id="progress" hidden><span class="spinner" aria-hidden="true"></span>Recherche dans la documentation…</p>
+
+    <section class="card result" id="result" aria-labelledby="result-title" hidden>
+      <div class="result-heading">
+        <h2 id="result-title" tabindex="-1">Réponse</h2>
+        <span id="latency" class="latency"></span>
+      </div>
+      <div id="answer" class="answer"></div>
+
+      <div class="sources" id="source-section" hidden>
+        <h3>Passages cités</h3>
+        <ol id="sources" class="source-list"></ol>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

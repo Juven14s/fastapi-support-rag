@@ -1,0 +1,897 @@
+{
+  "revision": "325fd16d32fd815633d6caf3d0d75aa7f30c51c9",
+  "version": "0.121.3",
+  "source": "https://github.com/fastapi/fastapi",
+  "license": "MIT",
+  "notice": "LICENSE.fastapi.txt",
+  "sections": [
+    {
+      "id": "dependencies/intro",
+      "title": "Dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L1",
+      "text": "**FastAPI** has a very powerful but intuitive **<abbr title=\"also known as components, resources, providers, services, injectables\">Dependency Injection</abbr>** system.\n\nIt is designed to be very simple to use, and to make it very easy for any developer to integrate other components with **FastAPI**.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/what-is-dependency-injection",
+      "title": "Dependencies · What is \"Dependency Injection\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#what-is-dependency-injection",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L7",
+      "text": "**\"Dependency Injection\"** means, in programming, that there is a way for your code (in this case, your *path operation functions*) to declare things that it requires to work and use: \"dependencies\".\n\nAnd then, that system (in this case **FastAPI**) will take care of doing whatever is needed to provide your code with those needed dependencies (\"inject\" the dependencies).\n\nThis is very useful when you need to:\n\n* Have shared logic (the same code logic again and again).\n* Share database connections.\n* Enforce security, authentication, role requirements, etc.\n* And many other things...\n\nAll these, while minimizing code repetition.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/first-steps",
+      "title": "Dependencies · First Steps",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#first-steps",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L22",
+      "text": "Let's see a very simple example. It will be so simple that it is not very useful, for now.\n\nBut this way we can focus on how the **Dependency Injection** system works.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/create-a-dependency-or-dependable",
+      "title": "Dependencies · Create a dependency, or \"dependable\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#create-a-dependency-or-dependable",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L28",
+      "text": "Let's first focus on the dependency.\n\nIt is just a function that can take all the same parameters that a *path operation function* can take:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n```\n\nThat's it.\n\n**2 lines**.\n\nAnd it has the same shape and structure that all your *path operation functions* have.\n\nYou can think of it as a *path operation function* without the \"decorator\" (without the `@app.get(\"/some-path\")`).\n\nAnd it can return anything you want.\n\nIn this case, this dependency expects:\n\n* An optional query parameter `q` that is a `str`.\n* An optional query parameter `skip` that is an `int`, and by default is `0`.\n* An optional query parameter `limit` that is an `int`, and by default is `100`.\n\nAnd then it just returns a `dict` containing those values.\n\nFastAPI added support for `Annotated` (and started recommending it) in version 0.95.0.\n\nIf you have an older version, you would get errors when trying to use `Annotated`.\n\nMake sure you [Upgrade the FastAPI version](../../deployment/versions.md#upgrading-the-fastapi-versions){.internal-link target=_blank} to at least 0.95.1 before using `Annotated`.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/import-depends",
+      "title": "Dependencies · Import Depends",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#import-depends",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L64",
+      "text": "```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/declare-the-dependency-in-the-dependant",
+      "title": "Dependencies · Declare the dependency, in the \"dependant\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#declare-the-dependency-in-the-dependant",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L68",
+      "text": "The same way you use `Body`, `Query`, etc. with your *path operation function* parameters, use `Depends` with a new parameter:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n```\n\nAlthough you use `Depends` in the parameters of your function the same way you use `Body`, `Query`, etc, `Depends` works a bit differently.\n\nYou only give `Depends` a single parameter.\n\nThis parameter must be something like a function.\n\nYou **don't call it** directly (don't add the parenthesis at the end), you just pass it as a parameter to `Depends()`.\n\nAnd that function takes parameters in the same way that *path operation functions* do.\n\nYou'll see what other \"things\", apart from functions, can be used as dependencies in the next chapter.\n\nWhenever a new request arrives, **FastAPI** will take care of:\n\n* Calling your dependency (\"dependable\") function with the correct parameters.\n* Get the result from your function.\n* Assign that result to the parameter in your *path operation function*.\n\n```mermaid\ngraph TB\n\ncommon_parameters([\"common_parameters\"])\nread_items[\"/items/\"]\nread_users[\"/users/\"]\n\ncommon_parameters --> read_items\ncommon_parameters --> read_users\n```\n\nThis way you write shared code once and **FastAPI** takes care of calling it for your *path operations*.\n\nNotice that you don't have to create a special class and pass it somewhere to **FastAPI** to \"register\" it or anything similar.\n\nYou just pass it to `Depends` and **FastAPI** knows how to do the rest.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/share-annotated-dependencies",
+      "title": "Dependencies · Share Annotated dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#share-annotated-dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L117",
+      "text": "In the examples above, you see that there's a tiny bit of **code duplication**.\n\nWhen you need to use the `common_parameters()` dependency, you have to write the whole parameter with the type annotation and `Depends()`:\n\n```Python\ncommons: Annotated[dict, Depends(common_parameters)]\n```\n\nBut because we are using `Annotated`, we can store that `Annotated` value in a variable and use it in multiple places:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\nCommonsDep = Annotated[dict, Depends(common_parameters)]\n\n@app.get(\"/items/\")\nasync def read_items(commons: CommonsDep):\n    return commons\n\n@app.get(\"/users/\")\nasync def read_users(commons: CommonsDep):\n    return commons\n```\n\nThis is just standard Python, it's called a \"type alias\", it's actually not specific to **FastAPI**.\n\nBut because **FastAPI** is based on the Python standards, including `Annotated`, you can use this trick in your code. 😎\n\nThe dependencies will keep working as expected, and the **best part** is that the **type information will be preserved**, which means that your editor will be able to keep providing you with **autocompletion**, **inline errors**, etc. The same for other tools like `mypy`.\n\nThis will be especially useful when you use it in a **large code base** where you use **the same dependencies** over and over again in **many *path operations***.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/to-async-or-not-to-async",
+      "title": "Dependencies · To async or not to async",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#to-async-or-not-to-async",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L143",
+      "text": "As dependencies will also be called by **FastAPI** (the same as your *path operation functions*), the same rules apply while defining your functions.\n\nYou can use `async def` or normal `def`.\n\nAnd you can declare dependencies with `async def` inside of normal `def` *path operation functions*, or `def` dependencies inside of `async def` *path operation functions*, etc.\n\nIt doesn't matter. **FastAPI** will know what to do.\n\nIf you don't know, check the [Async: *\"In a hurry?\"*](../../async.md#in-a-hurry){.internal-link target=_blank} section about `async` and `await` in the docs.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/integrated-with-openapi",
+      "title": "Dependencies · Integrated with OpenAPI",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L159",
+      "text": "All the request declarations, validations and requirements of your dependencies (and sub-dependencies) will be integrated in the same OpenAPI schema.\n\nSo, the interactive docs will have all the information from these dependencies too:",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/simple-usage",
+      "title": "Dependencies · Simple usage",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#simple-usage",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L167",
+      "text": "If you look at it, *path operation functions* are declared to be used whenever a *path* and *operation* matches, and then **FastAPI** takes care of calling the function with the correct parameters, extracting the data from the request.\n\nActually, all (or most) of the web frameworks work in this same way.\n\nYou never call those functions directly. They are called by your framework (in this case, **FastAPI**).\n\nWith the Dependency Injection system, you can also tell **FastAPI** that your *path operation function* also \"depends\" on something else that should be executed before your *path operation function*, and **FastAPI** will take care of executing it and \"injecting\" the results.\n\nOther common terms for this same idea of \"dependency injection\" are:\n\n* resources\n* providers\n* services\n* injectables\n* components",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/fastapi-plug-ins",
+      "title": "Dependencies · FastAPI plug-ins",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#fastapi-plug-ins",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L185",
+      "text": "Integrations and \"plug-ins\" can be built using the **Dependency Injection** system. But in fact, there is actually **no need to create \"plug-ins\"**, as by using dependencies it's possible to declare an infinite number of integrations and interactions that become available to your *path operation functions*.\n\nAnd dependencies can be created in a very simple and intuitive way that allows you to just import the Python packages you need, and integrate them with your API functions in a couple of lines of code, *literally*.\n\nYou will see examples of this in the next chapters, about relational and NoSQL databases, security, etc.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/fastapi-compatibility",
+      "title": "Dependencies · FastAPI compatibility",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#fastapi-compatibility",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L193",
+      "text": "The simplicity of the dependency injection system makes **FastAPI** compatible with:\n\n* all the relational databases\n* NoSQL databases\n* external packages\n* external APIs\n* authentication and authorization systems\n* API usage monitoring systems\n* response data injection systems\n* etc.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/simple-and-powerful",
+      "title": "Dependencies · Simple and Powerful",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#simple-and-powerful",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L206",
+      "text": "Although the hierarchical dependency injection system is very simple to define and use, it's still very powerful.\n\nYou can define dependencies that in turn can define dependencies themselves.\n\nIn the end, a hierarchical tree of dependencies is built, and the **Dependency Injection** system takes care of solving all these dependencies for you (and their sub-dependencies) and providing (injecting) the results at each step.\n\nFor example, let's say you have 4 API endpoints (*path operations*):\n\n* `/items/public/`\n* `/items/private/`\n* `/users/{user_id}/activate`\n* `/items/pro/`\n\nthen you could add different permission requirements for each of them just with dependencies and sub-dependencies:\n\n```mermaid\ngraph TB\n\ncurrent_user([\"current_user\"])\nactive_user([\"active_user\"])\nadmin_user([\"admin_user\"])\npaying_user([\"paying_user\"])\n\npublic[\"/items/public/\"]\nprivate[\"/items/private/\"]\nactivate_user[\"/users/{user_id}/activate\"]\npro_items[\"/items/pro/\"]\n\ncurrent_user --> active_user\nactive_user --> admin_user\nactive_user --> paying_user\n\ncurrent_user --> public\nactive_user --> private\nadmin_user --> activate_user\npaying_user --> pro_items\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies/integrated-with-openapi_1",
+      "title": "Dependencies · Integrated with OpenAPI",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi_1",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/index.md#L246",
+      "text": "All these dependencies, while declaring their requirements, also add parameters, validations, etc. to your *path operations*.\n\n**FastAPI** will take care of adding it all to the OpenAPI schema, so that it is shown in the interactive documentation systems.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/intro",
+      "title": "Sub-dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#sub-dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L1",
+      "text": "You can create dependencies that have **sub-dependencies**.\n\nThey can be as **deep** as you need them to be.\n\n**FastAPI** will take care of solving them.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/first-dependency-dependable",
+      "title": "Sub-dependencies · First dependency \"dependable\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#first-dependency-dependable",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L9",
+      "text": "You could create a first dependency (\"dependable\") like:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Cookie, Depends, FastAPI\n\napp = FastAPI()\n\ndef query_extractor(q: str | None = None):\n    return q\n\ndef query_or_cookie_extractor(\n    q: Annotated[str, Depends(query_extractor)],\n    last_query: Annotated[str | None, Cookie()] = None,\n):\n    if not q:\n        return last_query\n    return q\n\n@app.get(\"/items/\")\nasync def read_query(\n    query_or_default: Annotated[str, Depends(query_or_cookie_extractor)],\n):\n    return {\"q_or_cookie\": query_or_default}\n```\n\nIt declares an optional query parameter `q` as a `str`, and then it just returns it.\n\nThis is quite simple (not very useful), but will help us focus on how the sub-dependencies work.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/second-dependency-dependable-and-dependant",
+      "title": "Sub-dependencies · Second dependency, \"dependable\" and \"dependant\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#second-dependency-dependable-and-dependant",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L19",
+      "text": "Then you can create another dependency function (a \"dependable\") that at the same time declares a dependency of its own (so it is a \"dependant\" too):\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Cookie, Depends, FastAPI\n\napp = FastAPI()\n\ndef query_extractor(q: str | None = None):\n    return q\n\ndef query_or_cookie_extractor(\n    q: Annotated[str, Depends(query_extractor)],\n    last_query: Annotated[str | None, Cookie()] = None,\n):\n    if not q:\n        return last_query\n    return q\n\n@app.get(\"/items/\")\nasync def read_query(\n    query_or_default: Annotated[str, Depends(query_or_cookie_extractor)],\n):\n    return {\"q_or_cookie\": query_or_default}\n```\n\nLet's focus on the parameters declared:\n\n* Even though this function is a dependency (\"dependable\") itself, it also declares another dependency (it \"depends\" on something else).\n    * It depends on the `query_extractor`, and assigns the value returned by it to the parameter `q`.\n* It also declares an optional `last_query` cookie, as a `str`.\n    * If the user didn't provide any query `q`, we use the last query used, which we saved to a cookie before.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/use-the-dependency",
+      "title": "Sub-dependencies · Use the dependency",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#use-the-dependency",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L32",
+      "text": "Then we can use the dependency with:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Cookie, Depends, FastAPI\n\napp = FastAPI()\n\ndef query_extractor(q: str | None = None):\n    return q\n\ndef query_or_cookie_extractor(\n    q: Annotated[str, Depends(query_extractor)],\n    last_query: Annotated[str | None, Cookie()] = None,\n):\n    if not q:\n        return last_query\n    return q\n\n@app.get(\"/items/\")\nasync def read_query(\n    query_or_default: Annotated[str, Depends(query_or_cookie_extractor)],\n):\n    return {\"q_or_cookie\": query_or_default}\n```\n\nNotice that we are only declaring one dependency in the *path operation function*, the `query_or_cookie_extractor`.\n\nBut **FastAPI** will know that it has to solve `query_extractor` first, to pass the results of that to `query_or_cookie_extractor` while calling it.\n\n```mermaid\ngraph TB\n\nquery_extractor([\"query_extractor\"])\nquery_or_cookie_extractor([\"query_or_cookie_extractor\"])\n\nread_query[\"/items/\"]\n\nquery_extractor --> query_or_cookie_extractor --> read_query\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/using-the-same-dependency-multiple-times",
+      "title": "Sub-dependencies · Using the same dependency multiple times",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#using-the-same-dependency-multiple-times",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L57",
+      "text": "If one of your dependencies is declared multiple times for the same *path operation*, for example, multiple dependencies have a common sub-dependency, **FastAPI** will know to call that sub-dependency only once per request.\n\nAnd it will save the returned value in a <abbr title=\"A utility/system to store computed/generated values, to reuse them instead of computing them again.\">\"cache\"</abbr> and pass it to all the \"dependants\" that need it in that specific request, instead of calling the dependency multiple times for the same request.\n\nIn an advanced scenario where you know you need the dependency to be called at every step (possibly multiple times) in the same request instead of using the \"cached\" value, you can set the parameter `use_cache=False` when using `Depends`:\n\n```Python hl_lines=\"1\"\nasync def needy_dependency(fresh_value: Annotated[str, Depends(get_value, use_cache=False)]):\n    return {\"fresh_value\": fresh_value}\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "sub-dependencies/recap",
+      "title": "Sub-dependencies · Recap",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/#recap",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/sub-dependencies.md#L89",
+      "text": "Apart from all the fancy words used here, the **Dependency Injection** system is quite simple.\n\nJust functions that look the same as the *path operation functions*.\n\nBut still, it is very powerful, and allows you to declare arbitrarily deeply nested dependency \"graphs\" (trees).\n\nAll this might not seem as useful with these simple examples.\n\nBut you will see how useful it is in the chapters about **security**.\n\nAnd you will also see the amounts of code it will save you.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/intro",
+      "title": "Dependencies in path operation decorators",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#dependencies-in-path-operation-decorators",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L1",
+      "text": "In some cases you don't really need the return value of a dependency inside your *path operation function*.\n\nOr the dependency doesn't return a value.\n\nBut you still need it to be executed/solved.\n\nFor those cases, instead of declaring a *path operation function* parameter with `Depends`, you can add a `list` of `dependencies` to the *path operation decorator*.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator",
+      "title": "Dependencies in path operation decorators · Add dependencies to the *path operation decorator*",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#add-dependencies-to-the-path-operation-decorator",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L11",
+      "text": "The *path operation decorator* receives an optional argument `dependencies`.\n\nIt should be a `list` of `Depends()`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, Header, HTTPException\n\napp = FastAPI()\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")\n\nasync def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```\n\nThese dependencies will be executed/solved the same way as normal dependencies. But their value (if they return any) won't be passed to your *path operation function*.\n\nSome editors check for unused function parameters, and show them as errors.\n\nUsing these `dependencies` in the *path operation decorator* you can make sure they are executed while avoiding editor/tooling errors.\n\nIt might also help avoid confusion for new developers that see an unused parameter in your code and could think it's unnecessary.\n\nIn this example we use invented custom headers `X-Key` and `X-Token`.\n\nBut in real cases, when implementing security, you would get more benefits from using the integrated [Security utilities (the next chapter)](../security/index.md){.internal-link target=_blank}.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/dependencies-errors-and-return-values",
+      "title": "Dependencies in path operation decorators · Dependencies errors and return values",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#dependencies-errors-and-return-values",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L39",
+      "text": "You can use the same dependency *functions* you use normally.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/dependency-requirements",
+      "title": "Dependencies in path operation decorators · Dependency requirements",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#dependency-requirements",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L43",
+      "text": "They can declare request requirements (like headers) or other sub-dependencies:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, Header, HTTPException\n\napp = FastAPI()\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")\n\nasync def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/raise-exceptions",
+      "title": "Dependencies in path operation decorators · Raise exceptions",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#raise-exceptions",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L49",
+      "text": "These dependencies can `raise` exceptions, the same as normal dependencies:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, Header, HTTPException\n\napp = FastAPI()\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")\n\nasync def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/return-values",
+      "title": "Dependencies in path operation decorators · Return values",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#return-values",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L55",
+      "text": "And they can return values or not, the values won't be used.\n\nSo, you can reuse a normal dependency (that returns a value) you already use somewhere else, and even though the value won't be used, the dependency will be executed:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, Header, HTTPException\n\napp = FastAPI()\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")\n\nasync def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\n@app.get(\"/items/\", dependencies=[Depends(verify_token), Depends(verify_key)])\nasync def read_items():\n    return [{\"item\": \"Foo\"}, {\"item\": \"Bar\"}]\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/dependencies-for-a-group-of-path-operations",
+      "title": "Dependencies in path operation decorators · Dependencies for a group of *path operations*",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#dependencies-for-a-group-of-path-operations",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L63",
+      "text": "Later, when reading about how to structure bigger applications ([Bigger Applications - Multiple Files](../../tutorial/bigger-applications.md){.internal-link target=_blank}), possibly with multiple files, you will learn how to declare a single `dependencies` parameter for a group of *path operations*.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-in-path-operation-decorators/global-dependencies",
+      "title": "Dependencies in path operation decorators · Global Dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-in-path-operation-decorators/#global-dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-in-path-operation-decorators.md#L67",
+      "text": "Next we will see how to add dependencies to the whole `FastAPI` application, so that they apply to each *path operation*.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/intro",
+      "title": "Dependencies with yield",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L1",
+      "text": "FastAPI supports dependencies that do some <abbr title='sometimes also called \"exit code\", \"cleanup code\", \"teardown code\", \"closing code\", \"context manager exit code\", etc.'>extra steps after finishing</abbr>.\n\nTo do this, use `yield` instead of `return`, and write the extra steps (code) after.\n\nMake sure to use `yield` one single time per dependency.\n\nAny function that is valid to use with:\n\n* <a href=\"https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager\" class=\"external-link\" target=\"_blank\">`@contextlib.contextmanager`</a> or\n* <a href=\"https://docs.python.org/3/library/contextlib.html#contextlib.asynccontextmanager\" class=\"external-link\" target=\"_blank\">`@contextlib.asynccontextmanager`</a>\n\nwould be valid to use as a **FastAPI** dependency.\n\nIn fact, FastAPI uses those two decorators internally.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/a-database-dependency-with-yield",
+      "title": "Dependencies with yield · A database dependency with yield",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#a-database-dependency-with-yield",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L26",
+      "text": "For example, you could use this to create a database session and close it after finishing.\n\nOnly the code prior to and including the `yield` statement is executed before creating a response:\n\n```python\nasync def get_db():\n    db = DBSession()\n    try:\n        yield db\n    finally:\n        db.close()\n```\n\nThe yielded value is what is injected into *path operations* and other dependencies:\n\n```python\nasync def get_db():\n    db = DBSession()\n    try:\n        yield db\n    finally:\n        db.close()\n```\n\nThe code following the `yield` statement is executed after the response:\n\n```python\nasync def get_db():\n    db = DBSession()\n    try:\n        yield db\n    finally:\n        db.close()\n```\n\nYou can use `async` or regular functions.\n\n**FastAPI** will do the right thing with each, the same as with normal dependencies.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/a-dependency-with-yield-and-try",
+      "title": "Dependencies with yield · A dependency with yield and try",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#a-dependency-with-yield-and-try",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L50",
+      "text": "If you use a `try` block in a dependency with `yield`, you'll receive any exception that was thrown when using the dependency.\n\nFor example, if some code at some point in the middle, in another dependency or in a *path operation*, made a database transaction \"rollback\" or created any other exception, you would receive the exception in your dependency.\n\nSo, you can look for that specific exception inside the dependency with `except SomeException`.\n\nIn the same way, you can use `finally` to make sure the exit steps are executed, no matter if there was an exception or not.\n\n```python\nasync def get_db():\n    db = DBSession()\n    try:\n        yield db\n    finally:\n        db.close()\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/sub-dependencies-with-yield",
+      "title": "Dependencies with yield · Sub-dependencies with yield",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#sub-dependencies-with-yield",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L62",
+      "text": "You can have sub-dependencies and \"trees\" of sub-dependencies of any size and shape, and any or all of them can use `yield`.\n\n**FastAPI** will make sure that the \"exit code\" in each dependency with `yield` is run in the correct order.\n\nFor example, `dependency_c` can have a dependency on `dependency_b`, and `dependency_b` on `dependency_a`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends\n\nasync def dependency_a():\n    dep_a = generate_dep_a()\n    try:\n        yield dep_a\n    finally:\n        dep_a.close()\n\nasync def dependency_b(dep_a: Annotated[DepA, Depends(dependency_a)]):\n    dep_b = generate_dep_b()\n    try:\n        yield dep_b\n    finally:\n        dep_b.close(dep_a)\n\nasync def dependency_c(dep_b: Annotated[DepB, Depends(dependency_b)]):\n    dep_c = generate_dep_c()\n    try:\n        yield dep_c\n    finally:\n        dep_c.close(dep_b)\n```\n\nAnd all of them can use `yield`.\n\nIn this case `dependency_c`, to execute its exit code, needs the value from `dependency_b` (here named `dep_b`) to still be available.\n\nAnd, in turn, `dependency_b` needs the value from `dependency_a` (here named `dep_a`) to be available for its exit code.\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends\n\nasync def dependency_a():\n    dep_a = generate_dep_a()\n    try:\n        yield dep_a\n    finally:\n        dep_a.close()\n\nasync def dependency_b(dep_a: Annotated[DepA, Depends(dependency_a)]):\n    dep_b = generate_dep_b()\n    try:\n        yield dep_b\n    finally:\n        dep_b.close(dep_a)\n\nasync def dependency_c(dep_b: Annotated[DepB, Depends(dependency_b)]):\n    dep_c = generate_dep_c()\n    try:\n        yield dep_c\n    finally:\n        dep_c.close(dep_b)\n```\n\nThe same way, you could have some dependencies with `yield` and some other dependencies with `return`, and have some of those depend on some of the others.\n\nAnd you could have a single dependency that requires several other dependencies with `yield`, etc.\n\nYou can have any combinations of dependencies that you want.\n\n**FastAPI** will make sure everything is run in the correct order.\n\nThis works thanks to Python's <a href=\"https://docs.python.org/3/library/contextlib.html\" class=\"external-link\" target=\"_blank\">Context Managers</a>.\n\n**FastAPI** uses them internally to achieve this.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/dependencies-with-yield-and-httpexception",
+      "title": "Dependencies with yield · Dependencies with yield and HTTPException",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-httpexception",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L96",
+      "text": "You saw that you can use dependencies with `yield` and have `try` blocks that try to execute some code and then run some exit code after `finally`.\n\nYou can also use `except` to catch the exception that was raised and do something with it.\n\nFor example, you can raise a different exception, like `HTTPException`.\n\nThis is a somewhat advanced technique, and in most of the cases you won't really need it, as you can raise exceptions (including `HTTPException`) from inside of the rest of your application code, for example, in the *path operation function*.\n\nBut it's there for you if you need it. 🤓\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, HTTPException\n\napp = FastAPI()\n\ndata = {\n    \"plumbus\": {\"description\": \"Freshly pickled plumbus\", \"owner\": \"Morty\"},\n    \"portal-gun\": {\"description\": \"Gun to create portals\", \"owner\": \"Rick\"},\n}\n\nclass OwnerError(Exception):\n    pass\n\ndef get_username():\n    try:\n        yield \"Rick\"\n    except OwnerError as e:\n        raise HTTPException(status_code=400, detail=f\"Owner error: {e}\")\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: str, username: Annotated[str, Depends(get_username)]):\n    if item_id not in data:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    item = data[item_id]\n    if item[\"owner\"] != username:\n        raise OwnerError(username)\n    return item\n```\n\nIf you want to catch exceptions and create a custom response based on that, create a [Custom Exception Handler](../handling-errors.md#install-custom-exception-handlers){.internal-link target=_blank}.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/dependencies-with-yield-and-except",
+      "title": "Dependencies with yield · Dependencies with yield and except",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-and-except",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L116",
+      "text": "If you catch an exception using `except` in a dependency with `yield` and you don't raise it again (or raise a new exception), FastAPI won't be able to notice there was an exception, the same way that would happen with regular Python:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, HTTPException\n\napp = FastAPI()\n\nclass InternalError(Exception):\n    pass\n\ndef get_username():\n    try:\n        yield \"Rick\"\n    except InternalError:\n        print(\"Oops, we didn't raise again, Britney 😱\")\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: str, username: Annotated[str, Depends(get_username)]):\n    if item_id == \"portal-gun\":\n        raise InternalError(\n            f\"The portal gun is too dangerous to be owned by {username}\"\n        )\n    if item_id != \"plumbus\":\n        raise HTTPException(\n            status_code=404, detail=\"Item not found, there's only a plumbus here\"\n        )\n    return item_id\n```\n\nIn this case, the client will see an *HTTP 500 Internal Server Error* response as it should, given that we are not raising an `HTTPException` or similar, but the server will **not have any logs** or any other indication of what was the error. 😱",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except",
+      "title": "Dependencies with yield · Always raise in Dependencies with yield and except",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#always-raise-in-dependencies-with-yield-and-except",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L124",
+      "text": "If you catch an exception in a dependency with `yield`, unless you are raising another `HTTPException` or similar, **you should re-raise the original exception**.\n\nYou can re-raise the same exception using `raise`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI, HTTPException\n\napp = FastAPI()\n\nclass InternalError(Exception):\n    pass\n\ndef get_username():\n    try:\n        yield \"Rick\"\n    except InternalError:\n        print(\"We don't swallow the internal error here, we raise again 😎\")\n        raise\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: str, username: Annotated[str, Depends(get_username)]):\n    if item_id == \"portal-gun\":\n        raise InternalError(\n            f\"The portal gun is too dangerous to be owned by {username}\"\n        )\n    if item_id != \"plumbus\":\n        raise HTTPException(\n            status_code=404, detail=\"Item not found, there's only a plumbus here\"\n        )\n    return item_id\n```\n\nNow the client will get the same *HTTP 500 Internal Server Error* response, but the server will have our custom `InternalError` in the logs. 😎",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/execution-of-dependencies-with-yield",
+      "title": "Dependencies with yield · Execution of dependencies with yield",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#execution-of-dependencies-with-yield",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L134",
+      "text": "The sequence of execution is more or less like this diagram. Time flows from top to bottom. And each column is one of the parts interacting or executing code.\n\n```mermaid\nsequenceDiagram\n\nparticipant client as Client\nparticipant handler as Exception handler\nparticipant dep as Dep with yield\nparticipant operation as Path Operation\nparticipant tasks as Background tasks\n\n    Note over client,operation: Can raise exceptions, including HTTPException\n    client ->> dep: Start request\n    Note over dep: Run code up to yield\n    opt raise Exception\n        dep -->> handler: Raise Exception\n        handler -->> client: HTTP error response\n    end\n    dep ->> operation: Run dependency, e.g. DB session\n    opt raise\n        operation -->> dep: Raise Exception (e.g. HTTPException)\n        opt handle\n            dep -->> dep: Can catch exception, raise a new HTTPException, raise other exception\n        end\n        handler -->> client: HTTP error response\n    end\n\n    operation ->> client: Return response to client\n    Note over client,operation: Response is already sent, can't change it anymore\n    opt Tasks\n        operation -->> tasks: Send background tasks\n    end\n    opt Raise other exception\n        tasks -->> tasks: Handle exceptions in the background task code\n    end\n```\n\nOnly **one response** will be sent to the client. It might be one of the error responses or it will be the response from the *path operation*.\n\nAfter one of those responses is sent, no other response can be sent.\n\nIf you raise any exception in the code from the *path operation function*, it will be passed to the dependencies with yield, including `HTTPException`. In most cases you will want to re-raise that same exception or a new one from the dependency with `yield` to make sure it's properly handled.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/early-exit-and-scope",
+      "title": "Dependencies with yield · Early exit and scope",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L187",
+      "text": "Normally the exit code of dependencies with `yield` is executed **after the response** is sent to the client.\n\nBut if you know that you won't need to use the dependency after returning from the *path operation function*, you can use `Depends(scope=\"function\")` to tell FastAPI that it should close the dependency after the *path operation function* returns, but **before** the **response is sent**.\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\ndef get_username():\n    try:\n        yield \"Rick\"\n    finally:\n        print(\"Cleanup up before response is sent\")\n\n@app.get(\"/users/me\")\ndef get_user_me(username: Annotated[str, Depends(get_username, scope=\"function\")]):\n    return username\n```\n\n`Depends()` receives a `scope` parameter that can be:\n\n* `\"function\"`: start the dependency before the *path operation function* that handles the request, end the dependency after the *path operation function* ends, but **before** the response is sent back to the client. So, the dependency function will be executed **around** the *path operation **function***.\n* `\"request\"`: start the dependency before the *path operation function* that handles the request (similar to when using `\"function\"`), but end **after** the response is sent back to the client. So, the dependency function will be executed **around** the **request** and response cycle.\n\nIf not specified and the dependency has `yield`, it will have a `scope` of `\"request\"` by default.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/scope-for-sub-dependencies",
+      "title": "Dependencies with yield · scope for sub-dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#scope-for-sub-dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L202",
+      "text": "When you declare a dependency with a `scope=\"request\"` (the default), any sub-dependency needs to also have a `scope` of `\"request\"`.\n\nBut a dependency with `scope` of `\"function\"` can have dependencies with `scope` of `\"function\"` and `scope` of `\"request\"`.\n\nThis is because any dependency needs to be able to run its exit code before the sub-dependencies, as it might need to still use them during its exit code.\n\n```mermaid\nsequenceDiagram\n\nparticipant client as Client\nparticipant dep_req as Dep scope=\"request\"\nparticipant dep_func as Dep scope=\"function\"\nparticipant operation as Path Operation\n\n    client ->> dep_req: Start request\n    Note over dep_req: Run code up to yield\n    dep_req ->> dep_func: Pass dependency\n    Note over dep_func: Run code up to yield\n    dep_func ->> operation: Run path operation with dependency\n    operation ->> dep_func: Return from path operation\n    Note over dep_func: Run code after yield\n    Note over dep_func: ✅ Dependency closed\n    dep_func ->> client: Send response to client\n    Note over client: Response sent\n    Note over dep_req: Run code after yield\n    Note over dep_req: ✅ Dependency closed\n```",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/dependencies-with-yield-httpexception-except-and-background-tasks",
+      "title": "Dependencies with yield · Dependencies with yield, HTTPException, except and Background Tasks",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#dependencies-with-yield-httpexception-except-and-background-tasks",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L232",
+      "text": "Dependencies with `yield` have evolved over time to cover different use cases and fix some issues.\n\nIf you want to see what has changed in different versions of FastAPI, you can read more about it in the advanced guide, in [Advanced Dependencies - Dependencies with `yield`, `HTTPException`, `except` and Background Tasks](../../advanced/advanced-dependencies.md#dependencies-with-yield-httpexception-except-and-background-tasks){.internal-link target=_blank}.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/what-are-context-managers",
+      "title": "Dependencies with yield · What are \"Context Managers\"",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#what-are-context-managers",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L239",
+      "text": "\"Context Managers\" are any of those Python objects that you can use in a `with` statement.\n\nFor example, <a href=\"https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files\" class=\"external-link\" target=\"_blank\">you can use `with` to read a file</a>:\n\n```Python\nwith open(\"./somefile.txt\") as f:\n    contents = f.read()\n    print(contents)\n```\n\nUnderneath, the `open(\"./somefile.txt\")` creates an object that is called a \"Context Manager\".\n\nWhen the `with` block finishes, it makes sure to close the file, even if there were exceptions.\n\nWhen you create a dependency with `yield`, **FastAPI** will internally create a context manager for it, and combine it with some other related tools.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "dependencies-with-yield/using-context-managers-in-dependencies-with-yield",
+      "title": "Dependencies with yield · Using context managers in dependencies with yield",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#using-context-managers-in-dependencies-with-yield",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/dependencies-with-yield.md#L257",
+      "text": "This is, more or less, an \"advanced\" idea.\n\nIf you are just starting with **FastAPI** you might want to skip it for now.\n\nIn Python, you can create Context Managers by <a href=\"https://docs.python.org/3/reference/datamodel.html#context-managers\" class=\"external-link\" target=\"_blank\">creating a class with two methods: `__enter__()` and `__exit__()`</a>.\n\nYou can also use them inside of **FastAPI** dependencies with `yield` by using\n`with` or `async with` statements inside of the dependency function:\n\n```python\nclass MySuperContextManager:\n    def __init__(self):\n        self.db = DBSession()\n\n    def __enter__(self):\n        return self.db\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        self.db.close()\n\nasync def get_db():\n    with MySuperContextManager() as db:\n        yield db\n```\n\nAnother way to create a context manager is with:\n\n* <a href=\"https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager\" class=\"external-link\" target=\"_blank\">`@contextlib.contextmanager`</a> or\n* <a href=\"https://docs.python.org/3/library/contextlib.html#contextlib.asynccontextmanager\" class=\"external-link\" target=\"_blank\">`@contextlib.asynccontextmanager`</a>\n\nusing them to decorate a function with a single `yield`.\n\nThat's what **FastAPI** uses internally for dependencies with `yield`.\n\nBut you don't have to use the decorators for FastAPI dependencies (and you shouldn't).\n\nFastAPI will do it for you internally.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "testing/intro",
+      "title": "Testing",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L1",
+      "text": "Thanks to <a href=\"https://www.starlette.dev/testclient/\" class=\"external-link\" target=\"_blank\">Starlette</a>, testing **FastAPI** applications is easy and enjoyable.\n\nIt is based on <a href=\"https://www.python-httpx.org\" class=\"external-link\" target=\"_blank\">HTTPX</a>, which in turn is designed based on Requests, so it's very familiar and intuitive.\n\nWith it, you can use <a href=\"https://docs.pytest.org/\" class=\"external-link\" target=\"_blank\">pytest</a> directly with **FastAPI**.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/using-testclient",
+      "title": "Testing · Using TestClient",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#using-testclient",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L9",
+      "text": "To use `TestClient`, first install <a href=\"https://www.python-httpx.org\" class=\"external-link\" target=\"_blank\">`httpx`</a>.\n\nMake sure you create a [virtual environment](../virtual-environments.md){.internal-link target=_blank}, activate it, and then install it, for example:\n\n```console\n$ pip install httpx\n```\n\nImport `TestClient`.\n\nCreate a `TestClient` by passing your **FastAPI** application to it.\n\nCreate functions with a name that starts with `test_` (this is standard `pytest` conventions).\n\nUse the `TestClient` object the same way as you do with `httpx`.\n\nWrite simple `assert` statements with the standard Python expressions that you need to check (again, standard `pytest`).\n\n```python\nfrom fastapi import FastAPI\nfrom fastapi.testclient import TestClient\n\napp = FastAPI()\n\n@app.get(\"/\")\nasync def read_main():\n    return {\"msg\": \"Hello World\"}\n\nclient = TestClient(app)\n\ndef test_read_main():\n    response = client.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"msg\": \"Hello World\"}\n```\n\nNotice that the testing functions are normal `def`, not `async def`.\n\nAnd the calls to the client are also normal calls, not using `await`.\n\nThis allows you to use `pytest` directly without complications.\n\nYou could also use `from starlette.testclient import TestClient`.\n\n**FastAPI** provides the same `starlette.testclient` as `fastapi.testclient` just as a convenience for you, the developer. But it comes directly from Starlette.\n\nIf you want to call `async` functions in your tests apart from sending requests to your FastAPI application (e.g. asynchronous database functions), have a look at the [Async Tests](../advanced/async-tests.md){.internal-link target=_blank} in the advanced tutorial.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/separating-tests",
+      "title": "Testing · Separating tests",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#separating-tests",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L59",
+      "text": "In a real application, you probably would have your tests in a different file.\n\nAnd your **FastAPI** application might also be composed of several files/modules, etc.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/fastapi-app-file",
+      "title": "Testing · FastAPI app file",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#fastapi-app-file",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L65",
+      "text": "Let's say you have a file structure as described in [Bigger Applications](bigger-applications.md){.internal-link target=_blank}:\n\n```\n.\n├── app\n│   ├── __init__.py\n│   └── main.py\n```\n\nIn the file `main.py` you have your **FastAPI** app:\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\nasync def read_main():\n    return {\"msg\": \"Hello World\"}\n```",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/testing-file",
+      "title": "Testing · Testing file",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing-file",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L81",
+      "text": "Then you could have a file `test_main.py` with your tests. It could live on the same Python package (the same directory with a `__init__.py` file):\n\n``` hl_lines=\"5\"\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   └── test_main.py\n```\n\nBecause this file is in the same package, you can use relative imports to import the object `app` from the `main` module (`main.py`):\n\n```python\nfrom fastapi.testclient import TestClient\n\nfrom .main import app\n\nclient = TestClient(app)\n\ndef test_read_main():\n    response = client.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"msg\": \"Hello World\"}\n```\n\n...and have the code for the tests just like before.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/testing-extended-example",
+      "title": "Testing · Testing: extended example",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing-extended-example",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L100",
+      "text": "Now let's extend this example and add more details to see how to test different parts.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/extended-fastapi-app-file",
+      "title": "Testing · Extended FastAPI app file",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-fastapi-app-file",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L104",
+      "text": "Let's continue with the same file structure as before:\n\n```\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   └── test_main.py\n```\n\nLet's say that now the file `main.py` with your **FastAPI** app has some other **path operations**.\n\nIt has a `GET` operation that could return an error.\n\nIt has a `POST` operation that could return several errors.\n\nBoth *path operations* require an `X-Token` header.\n\n```Python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Header, HTTPException\nfrom pydantic import BaseModel\n\nfake_secret_token = \"coneofsilence\"\n\nfake_db = {\n    \"foo\": {\"id\": \"foo\", \"title\": \"Foo\", \"description\": \"There goes my hero\"},\n    \"bar\": {\"id\": \"bar\", \"title\": \"Bar\", \"description\": \"The bartenders\"},\n}\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    id: str\n    title: str\n    description: str | None = None\n\n@app.get(\"/items/{item_id}\", response_model=Item)\nasync def read_main(item_id: str, x_token: Annotated[str, Header()]):\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item_id not in fake_db:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return fake_db[item_id]\n\n@app.post(\"/items/\", response_model=Item)\nasync def create_item(item: Item, x_token: Annotated[str, Header()]):\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item.id in fake_db:\n        raise HTTPException(status_code=409, detail=\"Item already exists\")\n    fake_db[item.id] = item\n    return item\n```",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/extended-testing-file",
+      "title": "Testing · Extended testing file",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-testing-file",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L176",
+      "text": "You could then update `test_main.py` with the extended tests:\n\n```python\nfrom fastapi.testclient import TestClient\n\nfrom .main import app\n\nclient = TestClient(app)\n\ndef test_read_item():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foo\",\n        \"title\": \"Foo\",\n        \"description\": \"There goes my hero\",\n    }\n\ndef test_read_item_bad_token():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"hailhydra\"})\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\ndef test_read_nonexistent_item():\n    response = client.get(\"/items/baz\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 404\n    assert response.json() == {\"detail\": \"Item not found\"}\n\ndef test_create_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\"id\": \"foobar\", \"title\": \"Foo Bar\", \"description\": \"The Foo Barters\"},\n    )\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foobar\",\n        \"title\": \"Foo Bar\",\n        \"description\": \"The Foo Barters\",\n    }\n\ndef test_create_item_bad_token():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"hailhydra\"},\n        json={\"id\": \"bazz\", \"title\": \"Bazz\", \"description\": \"Drop the bazz\"},\n    )\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\ndef test_create_existing_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\n            \"id\": \"foo\",\n            \"title\": \"The Foo ID Stealers\",\n            \"description\": \"There goes my stealer\",\n        },\n    )\n    assert response.status_code == 409\n    assert response.json() == {\"detail\": \"Item already exists\"}\n```\n\nWhenever you need the client to pass information in the request and you don't know how to, you can search (Google) how to do it in `httpx`, or even how to do it with `requests`, as HTTPX's design is based on Requests' design.\n\nThen you just do the same in your tests.\n\nE.g.:\n\n* To pass a *path* or *query* parameter, add it to the URL itself.\n* To pass a JSON body, pass a Python object (e.g. a `dict`) to the parameter `json`.\n* If you need to send *Form Data* instead of JSON, use the `data` parameter instead.\n* To pass *headers*, use a `dict` in the `headers` parameter.\n* For *cookies*, a `dict` in the `cookies` parameter.\n\nFor more information about how to pass data to the backend (using `httpx` or the `TestClient`) check the <a href=\"https://www.python-httpx.org\" class=\"external-link\" target=\"_blank\">HTTPX documentation</a>.\n\nNote that the `TestClient` receives data that can be converted to JSON, not Pydantic models.\n\nIf you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the `jsonable_encoder` described in [JSON Compatible Encoder](encoder.md){.internal-link target=_blank}.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing/run-it",
+      "title": "Testing · Run it",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/#run-it",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/testing.md#L205",
+      "text": "After that, you just need to install `pytest`.\n\nMake sure you create a [virtual environment](../virtual-environments.md){.internal-link target=_blank}, activate it, and then install it, for example:\n\n<div class=\"termy\">\n\n```console\n$ pip install pytest\n\n---> 100%\n```\n\n</div>\n\nIt will detect the files and tests automatically, execute them, and report the results back to you.\n\nRun the tests with:\n\n<div class=\"termy\">\n\n```console\n$ pytest\n\n================ test session starts ================\nplatform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1\nrootdir: /home/user/code/superawesome-cli/app\nplugins: forked-1.1.3, xdist-1.31.0, cov-2.8.1\ncollected 6 items\n\n---> 100%\n\ntest_main.py <span style=\"color: green; white-space: pre;\">......                            [100%]</span>\n\n<span style=\"color: green;\">================= 1 passed in 0.03s =================</span>\n```\n\n</div>",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing-dependencies/overriding-dependencies-during-testing",
+      "title": "Testing Dependencies with Overrides · Overriding dependencies during testing",
+      "url": "https://fastapi.tiangolo.com/advanced/testing-dependencies/#overriding-dependencies-during-testing",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/testing-dependencies.md#L3",
+      "text": "There are some scenarios where you might want to override a dependency during testing.\n\nYou don't want the original dependency to run (nor any of the sub-dependencies it might have).\n\nInstead, you want to provide a different dependency that will be used only during tests (possibly only some specific tests), and will provide a value that can be used where the value of the original dependency was used.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing-dependencies/use-cases-external-service",
+      "title": "Testing Dependencies with Overrides · Use cases: external service",
+      "url": "https://fastapi.tiangolo.com/advanced/testing-dependencies/#use-cases-external-service",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/testing-dependencies.md#L11",
+      "text": "An example could be that you have an external authentication provider that you need to call.\n\nYou send it a token and it returns an authenticated user.\n\nThis provider might be charging you per request, and calling it might take some extra time than if you had a fixed mock user for tests.\n\nYou probably want to test the external provider once, but not necessarily call it for every test that runs.\n\nIn this case, you can override the dependency that calls that provider, and use a custom dependency that returns a mock user, only for your tests.",
+      "topic": "Tests"
+    },
+    {
+      "id": "testing-dependencies/use-the-app-dependency-overrides-attribute",
+      "title": "Testing Dependencies with Overrides · Use the app.dependency_overrides attribute",
+      "url": "https://fastapi.tiangolo.com/advanced/testing-dependencies/#use-the-app-dependency-overrides-attribute",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/testing-dependencies.md#L23",
+      "text": "For these cases, your **FastAPI** application has an attribute `app.dependency_overrides`, it is a simple `dict`.\n\nTo override a dependency for testing, you put as a key the original dependency (a function), and as the value, your dependency override (another function).\n\nAnd then **FastAPI** will call that override instead of the original dependency.\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\nfrom fastapi.testclient import TestClient\n\napp = FastAPI()\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return {\"message\": \"Hello Items!\", \"params\": commons}\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return {\"message\": \"Hello Users!\", \"params\": commons}\n\nclient = TestClient(app)\n\nasync def override_dependency(q: str | None = None):\n    return {\"q\": q, \"skip\": 5, \"limit\": 10}\n\napp.dependency_overrides[common_parameters] = override_dependency\n\ndef test_override_in_items():\n    response = client.get(\"/items/\")\n    assert response.status_code == 200\n    assert response.json() == {\n        \"message\": \"Hello Items!\",\n        \"params\": {\"q\": None, \"skip\": 5, \"limit\": 10},\n    }\n\ndef test_override_in_items_with_q():\n    response = client.get(\"/items/?q=foo\")\n    assert response.status_code == 200\n    assert response.json() == {\n        \"message\": \"Hello Items!\",\n        \"params\": {\"q\": \"foo\", \"skip\": 5, \"limit\": 10},\n    }\n\ndef test_override_in_items_with_params():\n    response = client.get(\"/items/?q=foo&skip=100&limit=200\")\n    assert response.status_code == 200\n    assert response.json() == {\n        \"message\": \"Hello Items!\",\n        \"params\": {\"q\": \"foo\", \"skip\": 5, \"limit\": 10},\n    }\n```\n\nYou can set a dependency override for a dependency used anywhere in your **FastAPI** application.\n\nThe original dependency could be used in a *path operation function*, a *path operation decorator* (when you don't use the return value), a `.include_router()` call, etc.\n\nFastAPI will still be able to override it.\n\nThen you can reset your overrides (remove them) by setting `app.dependency_overrides` to be an empty `dict`:\n\n```Python\napp.dependency_overrides = {}\n```\n\nIf you want to override a dependency only during some tests, you can set the override at the beginning of the test (inside the test function) and reset it at the end (at the end of the test function).",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/intro",
+      "title": "Async Tests",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#async-tests",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L1",
+      "text": "You have already seen how to test your **FastAPI** applications using the provided `TestClient`. Up to now, you have only seen how to write synchronous tests, without using `async` functions.\n\nBeing able to use asynchronous functions in your tests could be useful, for example, when you're querying your database asynchronously. Imagine you want to test sending requests to your FastAPI application and then verify that your backend successfully wrote the correct data in the database, while using an async database library.\n\nLet's look at how we can make that work.",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/pytest-mark-anyio",
+      "title": "Async Tests · pytest.mark.anyio",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#pytest-mark-anyio",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L9",
+      "text": "If we want to call asynchronous functions in our tests, our test functions have to be asynchronous. AnyIO provides a neat plugin for this, that allows us to specify that some test functions are to be called asynchronously.",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/httpx",
+      "title": "Async Tests · HTTPX",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#httpx",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L13",
+      "text": "Even if your **FastAPI** application uses normal `def` functions instead of `async def`, it is still an `async` application underneath.\n\nThe `TestClient` does some magic inside to call the asynchronous FastAPI application in your normal `def` test functions, using standard pytest. But that magic doesn't work anymore when we're using it inside asynchronous functions. By running our tests asynchronously, we can no longer use the `TestClient` inside our test functions.\n\nThe `TestClient` is based on <a href=\"https://www.python-httpx.org\" class=\"external-link\" target=\"_blank\">HTTPX</a>, and luckily, we can use it directly to test the API.",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/example",
+      "title": "Async Tests · Example",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#example",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L21",
+      "text": "For a simple example, let's consider a file structure similar to the one described in [Bigger Applications](../tutorial/bigger-applications.md){.internal-link target=_blank} and [Testing](../tutorial/testing.md){.internal-link target=_blank}:\n\n```\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   └── test_main.py\n```\n\nThe file `main.py` would have:\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\nasync def root():\n    return {\"message\": \"Tomato\"}\n```\n\nThe file `test_main.py` would have the tests for `main.py`, it could look like this now:\n\n```python\nimport pytest\nfrom httpx import ASGITransport, AsyncClient\n\nfrom .main import app\n\n@pytest.mark.anyio\nasync def test_root():\n    async with AsyncClient(\n        transport=ASGITransport(app=app), base_url=\"http://test\"\n    ) as ac:\n        response = await ac.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"message\": \"Tomato\"}\n```",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/run-it",
+      "title": "Async Tests · Run it",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#run-it",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L41",
+      "text": "You can run your tests as usual via:\n\n<div class=\"termy\">\n\n```console\n$ pytest\n\n---> 100%\n```\n\n</div>",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/in-detail",
+      "title": "Async Tests · In Detail",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#in-detail",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L55",
+      "text": "The marker `@pytest.mark.anyio` tells pytest that this test function should be called asynchronously:\n\n```python\nimport pytest\nfrom httpx import ASGITransport, AsyncClient\n\nfrom .main import app\n\n@pytest.mark.anyio\nasync def test_root():\n    async with AsyncClient(\n        transport=ASGITransport(app=app), base_url=\"http://test\"\n    ) as ac:\n        response = await ac.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"message\": \"Tomato\"}\n```\n\nNote that the test function is now `async def` instead of just `def` as before when using the `TestClient`.\n\nThen we can create an `AsyncClient` with the app, and send async requests to it, using `await`.\n\n```python\nimport pytest\nfrom httpx import ASGITransport, AsyncClient\n\nfrom .main import app\n\n@pytest.mark.anyio\nasync def test_root():\n    async with AsyncClient(\n        transport=ASGITransport(app=app), base_url=\"http://test\"\n    ) as ac:\n        response = await ac.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"message\": \"Tomato\"}\n```\n\nThis is the equivalent to:\n\n```Python\nresponse = client.get('/')\n```\n\n...that we used to make our requests with the `TestClient`.\n\nNote that we're using async/await with the new `AsyncClient` - the request is asynchronous.\n\nIf your application relies on lifespan events, the `AsyncClient` won't trigger these events. To ensure they are triggered, use `LifespanManager` from <a href=\"https://github.com/florimondmanca/asgi-lifespan#usage\" class=\"external-link\" target=\"_blank\">florimondmanca/asgi-lifespan</a>.",
+      "topic": "Tests"
+    },
+    {
+      "id": "async-tests/other-asynchronous-function-calls",
+      "title": "Async Tests · Other Asynchronous Function Calls",
+      "url": "https://fastapi.tiangolo.com/advanced/async-tests/#other-asynchronous-function-calls",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/advanced/async-tests.md#L91",
+      "text": "As the testing function is now asynchronous, you can now also call (and `await`) other `async` functions apart from sending requests to your FastAPI application in your tests, exactly as you would call them anywhere else in your code.\n\nIf you encounter a `RuntimeError: Task attached to a different loop` when integrating asynchronous function calls in your tests (e.g. when using <a href=\"https://stackoverflow.com/questions/41584243/runtimeerror-task-attached-to-a-different-loop\" class=\"external-link\" target=\"_blank\">MongoDB's MotorClient</a>), remember to instantiate objects that need an event loop only within async functions, e.g. an `@app.on_event(\"startup\")` callback.",
+      "topic": "Tests"
+    },
+    {
+      "id": "handling-errors/intro",
+      "title": "Handling Errors",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#handling-errors",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L1",
+      "text": "There are many situations in which you need to notify an error to a client that is using your API.\n\nThis client could be a browser with a frontend, a code from someone else, an IoT device, etc.\n\nYou could need to tell the client that:\n\n* The client doesn't have enough privileges for that operation.\n* The client doesn't have access to that resource.\n* The item the client was trying to access doesn't exist.\n* etc.\n\nIn these cases, you would normally return an **HTTP status code** in the range of **400** (from 400 to 499).\n\nThis is similar to the 200 HTTP status codes (from 200 to 299). Those \"200\" status codes mean that somehow there was a \"success\" in the request.\n\nThe status codes in the 400 range mean that there was an error from the client.\n\nRemember all those **\"404 Not Found\"** errors (and jokes)?",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/use-httpexception",
+      "title": "Handling Errors · Use HTTPException",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L22",
+      "text": "To return HTTP responses with errors to the client you use `HTTPException`.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/import-httpexception",
+      "title": "Handling Errors · Import HTTPException",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#import-httpexception",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L26",
+      "text": "```python\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str):\n    if item_id not in items:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"item\": items[item_id]}\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/raise-an-httpexception-in-your-code",
+      "title": "Handling Errors · Raise an HTTPException in your code",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#raise-an-httpexception-in-your-code",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L30",
+      "text": "`HTTPException` is a normal Python exception with additional data relevant for APIs.\n\nBecause it's a Python exception, you don't `return` it, you `raise` it.\n\nThis also means that if you are inside a utility function that you are calling inside of your *path operation function*, and you raise the `HTTPException` from inside of that utility function, it won't run the rest of the code in the *path operation function*, it will terminate that request right away and send the HTTP error from the `HTTPException` to the client.\n\nThe benefit of raising an exception over returning a value will be more evident in the section about Dependencies and Security.\n\nIn this example, when the client requests an item by an ID that doesn't exist, raise an exception with a status code of `404`:\n\n```python\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str):\n    if item_id not in items:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"item\": items[item_id]}\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/the-resulting-response",
+      "title": "Handling Errors · The resulting response",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#the-resulting-response",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L44",
+      "text": "If the client requests `http://example.com/items/foo` (an `item_id` `\"foo\"`), that client will receive an HTTP status code of 200, and a JSON response of:\n\n```JSON\n{\n  \"item\": \"The Foo Wrestlers\"\n}\n```\n\nBut if the client requests `http://example.com/items/bar` (a non-existent `item_id` `\"bar\"`), that client will receive an HTTP status code of 404 (the \"not found\" error), and a JSON response of:\n\n```JSON\n{\n  \"detail\": \"Item not found\"\n}\n```\n\nWhen raising an `HTTPException`, you can pass any value that can be converted to JSON as the parameter `detail`, not only `str`.\n\nYou could pass a `dict`, a `list`, etc.\n\nThey are handled automatically by **FastAPI** and converted to JSON.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/add-custom-headers",
+      "title": "Handling Errors · Add custom headers",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#add-custom-headers",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L72",
+      "text": "There are some situations in where it's useful to be able to add custom headers to the HTTP error. For example, for some types of security.\n\nYou probably won't need to use it directly in your code.\n\nBut in case you needed it for an advanced scenario, you can add custom headers:\n\n```python\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n@app.get(\"/items-header/{item_id}\")\nasync def read_item_header(item_id: str):\n    if item_id not in items:\n        raise HTTPException(\n            status_code=404,\n            detail=\"Item not found\",\n            headers={\"X-Error\": \"There goes my error\"},\n        )\n    return {\"item\": items[item_id]}\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/install-custom-exception-handlers",
+      "title": "Handling Errors · Install custom exception handlers",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#install-custom-exception-handlers",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L82",
+      "text": "You can add custom exception handlers with <a href=\"https://www.starlette.dev/exceptions/\" class=\"external-link\" target=\"_blank\">the same exception utilities from Starlette</a>.\n\nLet's say you have a custom exception `UnicornException` that you (or a library you use) might `raise`.\n\nAnd you want to handle this exception globally with FastAPI.\n\nYou could add a custom exception handler with `@app.exception_handler()`:\n\n```python\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\nclass UnicornException(Exception):\n    def __init__(self, name: str):\n        self.name = name\n\napp = FastAPI()\n\n@app.exception_handler(UnicornException)\nasync def unicorn_exception_handler(request: Request, exc: UnicornException):\n    return JSONResponse(\n        status_code=418,\n        content={\"message\": f\"Oops! {exc.name} did something. There goes a rainbow...\"},\n    )\n\n@app.get(\"/unicorns/{name}\")\nasync def read_unicorn(name: str):\n    if name == \"yolo\":\n        raise UnicornException(name=name)\n    return {\"unicorn_name\": name}\n```\n\nHere, if you request `/unicorns/yolo`, the *path operation* will `raise` a `UnicornException`.\n\nBut it will be handled by the `unicorn_exception_handler`.\n\nSo, you will receive a clean error, with an HTTP status code of `418` and a JSON content of:\n\n```JSON\n{\"message\": \"Oops! yolo did something. There goes a rainbow...\"}\n```\n\nYou could also use `from starlette.requests import Request` and `from starlette.responses import JSONResponse`.\n\n**FastAPI** provides the same `starlette.responses` as `fastapi.responses` just as a convenience for you, the developer. But most of the available responses come directly from Starlette. The same with `Request`.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/override-the-default-exception-handlers",
+      "title": "Handling Errors · Override the default exception handlers",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-the-default-exception-handlers",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L112",
+      "text": "**FastAPI** has some default exception handlers.\n\nThese handlers are in charge of returning the default JSON responses when you `raise` an `HTTPException` and when the request has invalid data.\n\nYou can override these exception handlers with your own.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/override-request-validation-exceptions",
+      "title": "Handling Errors · Override request validation exceptions",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-request-validation-exceptions",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L120",
+      "text": "When a request contains invalid data, **FastAPI** internally raises a `RequestValidationError`.\n\nAnd it also includes a default exception handler for it.\n\nTo override it, import the `RequestValidationError` and use it with `@app.exception_handler(RequestValidationError)` to decorate the exception handler.\n\nThe exception handler will receive a `Request` and the exception.\n\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import PlainTextResponse\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n@app.exception_handler(StarletteHTTPException)\nasync def http_exception_handler(request, exc):\n    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc):\n    return PlainTextResponse(str(exc), status_code=400)\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n```\n\nNow, if you go to `/items/foo`, instead of getting the default JSON error with:\n\n```JSON\n{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"path\",\n                \"item_id\"\n            ],\n            \"msg\": \"value is not a valid integer\",\n            \"type\": \"type_error.integer\"\n        }\n    ]\n}\n```\n\nyou will get a text version, with:\n\n```\n1 validation error\npath -> item_id\n  value is not a valid integer (type=type_error.integer)\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/requestvalidationerror-vs-validationerror",
+      "title": "Handling Errors · RequestValidationError vs ValidationError",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-request-validation-exceptions",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L157",
+      "text": "These are technical details that you might skip if it's not important for you now.\n\n`RequestValidationError` is a sub-class of Pydantic's <a href=\"https://docs.pydantic.dev/latest/concepts/models/#error-handling\" class=\"external-link\" target=\"_blank\">`ValidationError`</a>.\n\n**FastAPI** uses it so that, if you use a Pydantic model in `response_model`, and your data has an error, you will see the error in your log.\n\nBut the client/user will not see it. Instead, the client will receive an \"Internal Server Error\" with an HTTP status code `500`.\n\nIt should be this way because if you have a Pydantic `ValidationError` in your *response* or anywhere in your code (not in the client's *request*), it's actually a bug in your code.\n\nAnd while you fix it, your clients/users shouldn't have access to internal information about the error, as that could expose a security vulnerability.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/override-the-httpexception-error-handler",
+      "title": "Handling Errors · Override the HTTPException error handler",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-the-httpexception-error-handler",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L175",
+      "text": "The same way, you can override the `HTTPException` handler.\n\nFor example, you could want to return a plain text response instead of JSON for these errors:\n\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import PlainTextResponse\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n@app.exception_handler(StarletteHTTPException)\nasync def http_exception_handler(request, exc):\n    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc):\n    return PlainTextResponse(str(exc), status_code=400)\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n```\n\nYou could also use `from starlette.responses import PlainTextResponse`.\n\n**FastAPI** provides the same `starlette.responses` as `fastapi.responses` just as a convenience for you, the developer. But most of the available responses come directly from Starlette.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/use-the-requestvalidationerror-body",
+      "title": "Handling Errors · Use the RequestValidationError body",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#use-the-requestvalidationerror-body",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L191",
+      "text": "The `RequestValidationError` contains the `body` it received with invalid data.\n\nYou could use it while developing your app to log the body and debug it, return it to the user, etc.\n\n```python\nfrom fastapi import FastAPI, Request\nfrom fastapi.encoders import jsonable_encoder\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request: Request, exc: RequestValidationError):\n    return JSONResponse(\n        status_code=422,\n        content=jsonable_encoder({\"detail\": exc.errors(), \"body\": exc.body}),\n    )\n\nclass Item(BaseModel):\n    title: str\n    size: int\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n```\n\nNow try sending an invalid item like:\n\n```JSON\n{\n  \"title\": \"towel\",\n  \"size\": \"XL\"\n}\n```\n\nYou will receive a response telling you that the data is invalid containing the received body:\n\n```JSON hl_lines=\"12-15\"\n{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"body\",\n        \"size\"\n      ],\n      \"msg\": \"value is not a valid integer\",\n      \"type\": \"type_error.integer\"\n    }\n  ],\n  \"body\": {\n    \"title\": \"towel\",\n    \"size\": \"XL\"\n  }\n}\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/fastapis-httpexception-vs-starlettes-httpexception",
+      "title": "Handling Errors · FastAPI's HTTPException vs Starlette's HTTPException",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#fastapis-httpexception-vs-starlettes-httpexception",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L229",
+      "text": "**FastAPI** has its own `HTTPException`.\n\nAnd **FastAPI**'s `HTTPException` error class inherits from Starlette's `HTTPException` error class.\n\nThe only difference is that **FastAPI**'s `HTTPException` accepts any JSON-able data for the `detail` field, while Starlette's `HTTPException` only accepts strings for it.\n\nSo, you can keep raising **FastAPI**'s `HTTPException` as normally in your code.\n\nBut when you register an exception handler, you should register it for Starlette's `HTTPException`.\n\nThis way, if any part of Starlette's internal code, or a Starlette extension or plug-in, raises a Starlette `HTTPException`, your handler will be able to catch and handle it.\n\nIn this example, to be able to have both `HTTPException`s in the same code, Starlette's exceptions is renamed to `StarletteHTTPException`:\n\n```Python\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n```",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "handling-errors/reuse-fastapis-exception-handlers",
+      "title": "Handling Errors · Reuse FastAPI's exception handlers",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#reuse-fastapis-exception-handlers",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/handling-errors.md#L249",
+      "text": "If you want to use the exception along with the same default exception handlers from  **FastAPI**, you can import and reuse the default exception handlers from `fastapi.exception_handlers`:\n\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exception_handlers import (\n    http_exception_handler,\n    request_validation_exception_handler,\n)\nfrom fastapi.exceptions import RequestValidationError\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n@app.exception_handler(StarletteHTTPException)\nasync def custom_http_exception_handler(request, exc):\n    print(f\"OMG! An HTTP error!: {repr(exc)}\")\n    return await http_exception_handler(request, exc)\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc):\n    print(f\"OMG! The client sent invalid data!: {exc}\")\n    return await request_validation_exception_handler(request, exc)\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n```\n\nIn this example you are just printing the error with a very expressive message, but you get the idea. You can use the exception and then just reuse the default exception handlers.",
+      "topic": "Erreurs"
+    },
+    {
+      "id": "body/intro",
+      "title": "Request Body",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L1",
+      "text": "When you need to send data from a client (let's say, a browser) to your API, you send it as a **request body**.\n\nA **request** body is data sent by the client to your API. A **response** body is the data your API sends to the client.\n\nYour API almost always has to send a **response** body. But clients don't necessarily need to send **request bodies** all the time, sometimes they only request a path, maybe with some query parameters, but don't send a body.\n\nTo declare a **request** body, you use <a href=\"https://docs.pydantic.dev/\" class=\"external-link\" target=\"_blank\">Pydantic</a> models with all their power and benefits.\n\nTo send data, you should use one of: `POST` (the more common), `PUT`, `DELETE` or `PATCH`.\n\nSending a body with a `GET` request has an undefined behavior in the specifications, nevertheless, it is supported by FastAPI, only for very complex/extreme use cases.\n\nAs it is discouraged, the interactive docs with Swagger UI won't show the documentation for the body when using `GET`, and proxies in the middle might not support it.",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/import-pydantics-basemodel",
+      "title": "Request Body · Import Pydantic's BaseModel",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#import-pydantics-basemodel",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L21",
+      "text": "First, you need to import `BaseModel` from `pydantic`:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/create-your-data-model",
+      "title": "Request Body · Create your data model",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#create-your-data-model",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L27",
+      "text": "Then you declare your data model as a class that inherits from `BaseModel`.\n\nUse standard Python types for all the attributes:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n```\n\nThe same as when declaring query parameters, when a model attribute has a default value, it is not required. Otherwise, it is required. Use `None` to make it just optional.\n\nFor example, this model above declares a JSON \"`object`\" (or Python `dict`) like:\n\n```JSON\n{\n    \"name\": \"Foo\",\n    \"description\": \"An optional description\",\n    \"price\": 45.2,\n    \"tax\": 3.5\n}\n```\n\n...as `description` and `tax` are optional (with a default value of `None`), this JSON \"`object`\" would also be valid:\n\n```JSON\n{\n    \"name\": \"Foo\",\n    \"price\": 45.2\n}\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/declare-it-as-a-parameter",
+      "title": "Request Body · Declare it as a parameter",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#declare-it-as-a-parameter",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L58",
+      "text": "To add it to your *path operation*, declare it the same way you declared path and query parameters:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n```\n\n...and declare its type as the model you created, `Item`.",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/results",
+      "title": "Request Body · Results",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#results",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L66",
+      "text": "With just that Python type declaration, **FastAPI** will:\n\n* Read the body of the request as JSON.\n* Convert the corresponding types (if needed).\n* Validate the data.\n    * If the data is invalid, it will return a nice and clear error, indicating exactly where and what was the incorrect data.\n* Give you the received data in the parameter `item`.\n    * As you declared it in the function to be of type `Item`, you will also have all the editor support (completion, etc) for all of the attributes and their types.\n* Generate <a href=\"https://json-schema.org\" class=\"external-link\" target=\"_blank\">JSON Schema</a> definitions for your model, you can also use them anywhere else you like if it makes sense for your project.\n* Those schemas will be part of the generated OpenAPI schema, and used by the automatic documentation <abbr title=\"User Interfaces\">UIs</abbr>.",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/automatic-docs",
+      "title": "Request Body · Automatic docs",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#automatic-docs",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L79",
+      "text": "The JSON Schemas of your models will be part of your OpenAPI generated schema, and will be shown in the interactive API docs:\n\nAnd will also be used in the API docs inside each *path operation* that needs them:",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/editor-support",
+      "title": "Request Body · Editor support",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#editor-support",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L89",
+      "text": "In your editor, inside your function you will get type hints and completion everywhere (this wouldn't happen if you received a `dict` instead of a Pydantic model):\n\nYou also get error checks for incorrect type operations:\n\nThis is not by chance, the whole framework was built around that design.\n\nAnd it was thoroughly tested at the design phase, before any implementation, to ensure it would work with all the editors.\n\nThere were even some changes to Pydantic itself to support this.\n\nThe previous screenshots were taken with <a href=\"https://code.visualstudio.com\" class=\"external-link\" target=\"_blank\">Visual Studio Code</a>.\n\nBut you would get the same editor support with <a href=\"https://www.jetbrains.com/pycharm/\" class=\"external-link\" target=\"_blank\">PyCharm</a> and most of the other Python editors:\n\nIf you use <a href=\"https://www.jetbrains.com/pycharm/\" class=\"external-link\" target=\"_blank\">PyCharm</a> as your editor, you can use the <a href=\"https://github.com/koxudaxi/pydantic-pycharm-plugin/\" class=\"external-link\" target=\"_blank\">Pydantic PyCharm Plugin</a>.\n\nIt improves editor support for Pydantic models, with:\n\n* auto-completion\n* type checks\n* refactoring\n* searching\n* inspections",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/use-the-model",
+      "title": "Request Body · Use the model",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#use-the-model",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L125",
+      "text": "Inside of the function, you can access all the attributes of the model object directly:\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    item_dict = item.dict()\n    if item.tax is not None:\n        price_with_tax = item.price + item.tax\n        item_dict.update({\"price_with_tax\": price_with_tax})\n    return item_dict\n```\n\nIn Pydantic v1 the method was called `.dict()`, it was deprecated (but still supported) in Pydantic v2, and renamed to `.model_dump()`.\n\nThe examples here use `.dict()` for compatibility with Pydantic v1, but you should use `.model_dump()` instead if you can use Pydantic v2.",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/request-body-path-parameters",
+      "title": "Request Body · Request body + path parameters",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-parameters",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L139",
+      "text": "You can declare path parameters and request body at the same time.\n\n**FastAPI** will recognize that the function parameters that match path parameters should be **taken from the path**, and that function parameters that are declared to be Pydantic models should be **taken from the request body**.\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.put(\"/items/{item_id}\")\nasync def update_item(item_id: int, item: Item):\n    return {\"item_id\": item_id, **item.dict()}\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/request-body-path-query-parameters",
+      "title": "Request Body · Request body + path + query parameters",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L148",
+      "text": "You can also declare **body**, **path** and **query** parameters, all at the same time.\n\n**FastAPI** will recognize each of them and take the data from the correct place.\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\napp = FastAPI()\n\n@app.put(\"/items/{item_id}\")\nasync def update_item(item_id: int, item: Item, q: str | None = None):\n    result = {\"item_id\": item_id, **item.dict()}\n    if q:\n        result.update({\"q\": q})\n    return result\n```\n\nThe function parameters will be recognized as follows:\n\n* If the parameter is also declared in the **path**, it will be used as a path parameter.\n* If the parameter is of a **singular type** (like `int`, `float`, `str`, `bool`, etc) it will be interpreted as a **query** parameter.\n* If the parameter is declared to be of the type of a **Pydantic model**, it will be interpreted as a request **body**.\n\nFastAPI will know that the value of `q` is not required because of the default value `= None`.\n\nThe `str | None` (Python 3.10+) or `Union` in `Union[str, None]` (Python 3.8+) is not used by FastAPI to determine that the value is not required, it will know it's not required because it has a default value of `= None`.\n\nBut adding the type annotations will allow your editor to give you better support and detect errors.",
+      "topic": "Validation"
+    },
+    {
+      "id": "body/without-pydantic",
+      "title": "Request Body · Without Pydantic",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/#without-pydantic",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/body.md#L172",
+      "text": "If you don't want to use Pydantic models, you can also use **Body** parameters. See the docs for [Body - Multiple Parameters: Singular values in body](body-multiple-params.md#singular-values-in-body){.internal-link target=_blank}.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/intro",
+      "title": "Query Parameters and String Validations",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-parameters-and-string-validations",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L1",
+      "text": "**FastAPI** allows you to declare additional information and validation for your parameters.\n\nLet's take this application as example:\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: str | None = None):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nThe query parameter `q` is of type `str | None`, that means that it's of type `str` but could also be `None`, and indeed, the default value is `None`, so FastAPI will know it's not required.\n\nFastAPI will know that the value of `q` is not required because of the default value `= None`.\n\nHaving `str | None` will allow your editor to give you better support and detect errors.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/additional-validation",
+      "title": "Query Parameters and String Validations · Additional validation",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#additional-validation",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L19",
+      "text": "We are going to enforce that even though `q` is optional, whenever it is provided, **its length doesn't exceed 50 characters**.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/import-query-and-annotated",
+      "title": "Query Parameters and String Validations · Import Query and Annotated",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#import-query-and-annotated",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L23",
+      "text": "To achieve that, first import:\n\n* `Query` from `fastapi`\n* `Annotated` from `typing`\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(max_length=50)] = None):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nFastAPI added support for `Annotated` (and started recommending it) in version 0.95.0.\n\nIf you have an older version, you would get errors when trying to use `Annotated`.\n\nMake sure you [Upgrade the FastAPI version](../deployment/versions.md#upgrading-the-fastapi-versions){.internal-link target=_blank} to at least 0.95.1 before using `Annotated`.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/use-annotated-in-the-type-for-the-q-parameter",
+      "title": "Query Parameters and String Validations · Use Annotated in the type for the q parameter",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#use-annotated-in-the-type-for-the-q-parameter",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L42",
+      "text": "Remember I told you before that `Annotated` can be used to add metadata to your parameters in the [Python Types Intro](../python-types.md#type-hints-with-metadata-annotations){.internal-link target=_blank}?\n\nNow it's the time to use it with FastAPI. 🚀\n\nWe had this type annotation:\n\n```Python\nq: str | None = None\n```\n\nWhat we will do is wrap that with `Annotated`, so it becomes:\n\n```Python\nq: Annotated[str | None] = None\n```\n\nBoth of those versions mean the same thing, `q` is a parameter that can be a `str` or `None`, and by default, it is `None`.\n\nNow let's jump to the fun stuff. 🎉",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/add-query-to-annotated-in-the-q-parameter",
+      "title": "Query Parameters and String Validations · Add Query to Annotated in the q parameter",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-query-to-annotated-in-the-q-parameter",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L88",
+      "text": "Now that we have this `Annotated` where we can put more information (in this case some additional validation), add `Query` inside of `Annotated`, and set the parameter `max_length` to `50`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(max_length=50)] = None):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nNotice that the default value is still `None`, so the parameter is still optional.\n\nBut now, having `Query(max_length=50)` inside of `Annotated`, we are telling FastAPI that we want it to have **additional validation** for this value, we want it to have maximum 50 characters. 😎\n\nHere we are using `Query()` because this is a **query parameter**. Later we will see others like `Path()`, `Body()`, `Header()`, and `Cookie()`, that also accept the same arguments as `Query()`.\n\nFastAPI will now:\n\n* **Validate** the data making sure that the max length is 50 characters\n* Show a **clear error** for the client when the data is not valid\n* **Document** the parameter in the OpenAPI schema *path operation* (so it will show up in the **automatic docs UI**)",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/alternative-old-query-as-the-default-value",
+      "title": "Query Parameters and String Validations · Alternative (old): Query as the default value",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#alternative-old-query-as-the-default-value",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L110",
+      "text": "Previous versions of FastAPI (before <abbr title=\"before 2023-03\">0.95.0</abbr>) required you to use `Query` as the default value of your parameter, instead of putting it in `Annotated`, there's a high chance that you will see code using it around, so I'll explain it to you.\n\nFor new code and whenever possible, use `Annotated` as explained above. There are multiple advantages (explained below) and no disadvantages. 🍰\n\nThis is how you would use `Query()` as the default value of your function parameter, setting the parameter `max_length` to 50:\n\n```python\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: str | None = Query(default=None, max_length=50)):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nAs in this case (without using `Annotated`) we have to replace the default value `None` in the function with `Query()`, we now need to set the default value with the parameter `Query(default=None)`, it serves the same purpose of defining that default value (at least for FastAPI).\n\nSo:\n\n```Python\nq: str | None = Query(default=None)\n```\n\n...makes the parameter optional, with a default value of `None`, the same as:\n\n```Python\nq: str | None = None\n```\n\nBut the `Query` version declares it explicitly as being a query parameter.\n\nThen, we can pass more parameters to `Query`. In this case, the `max_length` parameter that applies to strings:\n\n```Python\nq: str | None = Query(default=None, max_length=50)\n```\n\nThis will validate the data, show a clear error when the data is not valid, and document the parameter in the OpenAPI schema *path operation*.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/query-as-the-default-value-or-in-annotated",
+      "title": "Query Parameters and String Validations · Query as the default value or in Annotated",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-as-the-default-value-or-in-annotated",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L149",
+      "text": "Keep in mind that when using `Query` inside of `Annotated` you cannot use the `default` parameter for `Query`.\n\nInstead, use the actual default value of the function parameter. Otherwise, it would be inconsistent.\n\nFor example, this is not allowed:\n\n```Python\nq: Annotated[str, Query(default=\"rick\")] = \"morty\"\n```\n\n...because it's not clear if the default value should be `\"rick\"` or `\"morty\"`.\n\nSo, you would use (preferably):\n\n```Python\nq: Annotated[str, Query()] = \"rick\"\n```\n\n...or in older code bases you will find:\n\n```Python\nq: str = Query(default=\"rick\")\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/advantages-of-annotated",
+      "title": "Query Parameters and String Validations · Advantages of Annotated",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#advantages-of-annotated",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L175",
+      "text": "**Using `Annotated` is recommended** instead of the default value in function parameters, it is **better** for multiple reasons. 🤓\n\nThe **default** value of the **function parameter** is the **actual default** value, that's more intuitive with Python in general. 😌\n\nYou could **call** that same function in **other places** without FastAPI, and it would **work as expected**. If there's a **required** parameter (without a default value), your **editor** will let you know with an error, **Python** will also complain if you run it without passing the required parameter.\n\nWhen you don't use `Annotated` and instead use the **(old) default value style**, if you call that function without FastAPI in **other places**, you have to **remember** to pass the arguments to the function for it to work correctly, otherwise the values will be different from what you expect (e.g. `QueryInfo` or something similar instead of `str`). And your editor won't complain, and Python won't complain running that function, only when the operations inside error out.\n\nBecause `Annotated` can have more than one metadata annotation, you could now even use the same function with other tools, like <a href=\"https://typer.tiangolo.com/\" class=\"external-link\" target=\"_blank\">Typer</a>. 🚀",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/add-more-validations",
+      "title": "Query Parameters and String Validations · Add more validations",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-more-validations",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L187",
+      "text": "You can also add a parameter `min_length`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[str | None, Query(min_length=3, max_length=50)] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/add-regular-expressions",
+      "title": "Query Parameters and String Validations · Add regular expressions",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-regular-expressions",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L193",
+      "text": "You can define a <abbr title=\"A regular expression, regex or regexp is a sequence of characters that define a search pattern for strings.\">regular expression</abbr> `pattern` that the parameter should match:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[\n        str | None, Query(min_length=3, max_length=50, pattern=\"^fixedquery$\")\n    ] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nThis specific regular expression pattern checks that the received parameter value:\n\n* `^`: starts with the following characters, doesn't have characters before.\n* `fixedquery`: has the exact value `fixedquery`.\n* `$`: ends there, doesn't have any more characters after `fixedquery`.\n\nIf you feel lost with all these **\"regular expression\"** ideas, don't worry. They are a hard topic for many people. You can still do a lot of stuff without needing regular expressions yet.\n\nNow you know that whenever you need them you can use them in **FastAPI**.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/pydantic-v1-regex-instead-of-pattern",
+      "title": "Query Parameters and String Validations · Pydantic v1 regex instead of pattern",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#add-regular-expressions",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L209",
+      "text": "Before Pydantic version 2 and before FastAPI 0.100.0, the parameter was called `regex` instead of `pattern`, but it's now deprecated.\n\nYou could still see some code using it:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[\n        str | None, Query(min_length=3, max_length=50, regex=\"^fixedquery$\")\n    ] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nBut know that this is deprecated and it should be updated to use the new parameter `pattern`. 🤓",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/default-values",
+      "title": "Query Parameters and String Validations · Default values",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#default-values",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L223",
+      "text": "You can, of course, use default values other than `None`.\n\nLet's say that you want to declare the `q` query parameter to have a `min_length` of `3`, and to have a default value of `\"fixedquery\"`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str, Query(min_length=3)] = \"fixedquery\"):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nHaving a default value of any type, including `None`, makes the parameter optional (not required).",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/required-parameters",
+      "title": "Query Parameters and String Validations · Required parameters",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#required-parameters",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L237",
+      "text": "When we don't need to declare more validations or metadata, we can make the `q` query parameter required just by not declaring a default value, like:\n\n```Python\nq: str\n```\n\ninstead of:\n\n```Python\nq: str | None = None\n```\n\nBut we are now declaring it with `Query`, for example like:\n\n```Python\nq: Annotated[str | None, Query(min_length=3)] = None\n```\n\nSo, when you need to declare a value as required while using `Query`, you can simply not declare a default value:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str, Query(min_length=3)]):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/required-can-be-none",
+      "title": "Query Parameters and String Validations · Required, can be None",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#required-parameters-and-none",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L261",
+      "text": "You can declare that a parameter can accept `None`, but that it's still required. This would force clients to send a value, even if the value is `None`.\n\nTo do that, you can declare that `None` is a valid type but simply do not declare a default value:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(min_length=3)]):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/query-parameter-list-multiple-values",
+      "title": "Query Parameters and String Validations · Query parameter list / multiple values",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-parameter-list-multiple-values",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L269",
+      "text": "When you define a query parameter explicitly with `Query` you can also declare it to receive a list of values, or said in another way, to receive multiple values.\n\nFor example, to declare a query parameter `q` that can appear multiple times in the URL, you can write:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[list[str] | None, Query()] = None):\n    query_items = {\"q\": q}\n    return query_items\n```\n\nThen, with a URL like:\n\n```\nhttp://localhost:8000/items/?q=foo&q=bar\n```\n\nyou would receive the multiple `q` *query parameters'* values (`foo` and `bar`) in a Python `list` inside your *path operation function*, in the *function parameter* `q`.\n\nSo, the response to that URL would be:\n\n```JSON\n{\n  \"q\": [\n    \"foo\",\n    \"bar\"\n  ]\n}\n```\n\nTo declare a query parameter with a type of `list`, like in the example above, you need to explicitly use `Query`, otherwise it would be interpreted as a request body.\n\nThe interactive API docs will update accordingly, to allow multiple values:",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/query-parameter-list-multiple-values-with-defaults",
+      "title": "Query Parameters and String Validations · Query parameter list / multiple values with defaults",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#query-parameter-list-multiple-values-with-defaults",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L306",
+      "text": "You can also define a default `list` of values if none are provided:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[list[str], Query()] = [\"foo\", \"bar\"]):\n    query_items = {\"q\": q}\n    return query_items\n```\n\nIf you go to:\n\n```\nhttp://localhost:8000/items/\n```\n\nthe default of `q` will be: `[\"foo\", \"bar\"]` and your response will be:\n\n```JSON\n{\n  \"q\": [\n    \"foo\",\n    \"bar\"\n  ]\n}\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/using-just-list",
+      "title": "Query Parameters and String Validations · Using just list",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#using-just-list",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L329",
+      "text": "You can also use `list` directly instead of `list[str]`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[list, Query()] = []):\n    query_items = {\"q\": q}\n    return query_items\n```\n\nKeep in mind that in this case, FastAPI won't check the contents of the list.\n\nFor example, `list[int]` would check (and document) that the contents of the list are integers. But `list` alone wouldn't.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/declare-more-metadata",
+      "title": "Query Parameters and String Validations · Declare more metadata",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#declare-more-metadata",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L343",
+      "text": "You can add more information about the parameter.\n\nThat information will be included in the generated OpenAPI and used by the documentation user interfaces and external tools.\n\nKeep in mind that different tools might have different levels of OpenAPI support.\n\nSome of them might not show all the extra information declared yet, although in most of the cases, the missing feature is already planned for development.\n\nYou can add a `title`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[str | None, Query(title=\"Query string\", min_length=3)] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nAnd a `description`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[\n        str | None,\n        Query(\n            title=\"Query string\",\n            description=\"Query string for the items to search in the database that have a good match\",\n            min_length=3,\n        ),\n    ] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/alias-parameters",
+      "title": "Query Parameters and String Validations · Alias parameters",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#alias-parameters",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L365",
+      "text": "Imagine that you want the parameter to be `item-query`.\n\nLike in:\n\n```\nhttp://127.0.0.1:8000/items/?item-query=foobaritems\n```\n\nBut `item-query` is not a valid Python variable name.\n\nThe closest would be `item_query`.\n\nBut you still need it to be exactly `item-query`...\n\nThen you can declare an `alias`, and that alias is what will be used to find the parameter value:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(q: Annotated[str | None, Query(alias=\"item-query\")] = None):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/deprecating-parameters",
+      "title": "Query Parameters and String Validations · Deprecating parameters",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#deprecating-parameters",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L385",
+      "text": "Now let's say you don't like this parameter anymore.\n\nYou have to leave it there a while because there are clients using it, but you want the docs to clearly show it as <abbr title=\"obsolete, recommended not to use it\">deprecated</abbr>.\n\nThen pass the parameter `deprecated=True` to `Query`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    q: Annotated[\n        str | None,\n        Query(\n            alias=\"item-query\",\n            title=\"Query string\",\n            description=\"Query string for the items to search in the database that have a good match\",\n            min_length=3,\n            max_length=50,\n            pattern=\"^fixedquery$\",\n            deprecated=True,\n        ),\n    ] = None,\n):\n    results = {\"items\": [{\"item_id\": \"Foo\"}, {\"item_id\": \"Bar\"}]}\n    if q:\n        results.update({\"q\": q})\n    return results\n```\n\nThe docs will show it like this:",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/exclude-parameters-from-openapi",
+      "title": "Query Parameters and String Validations · Exclude parameters from OpenAPI",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#exclude-parameters-from-openapi",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L399",
+      "text": "To exclude a query parameter from the generated OpenAPI schema (and thus, from the automatic documentation systems), set the parameter `include_in_schema` of `Query` to `False`:\n\n```python\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items/\")\nasync def read_items(\n    hidden_query: Annotated[str | None, Query(include_in_schema=False)] = None,\n):\n    if hidden_query:\n        return {\"hidden_query\": hidden_query}\n    else:\n        return {\"hidden_query\": \"Not found\"}\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/custom-validation",
+      "title": "Query Parameters and String Validations · Custom Validation",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#custom-validation",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L405",
+      "text": "There could be cases where you need to do some **custom validation** that can't be done with the parameters shown above.\n\nIn those cases, you can use a **custom validator function** that is applied after the normal validation (e.g. after validating that the value is a `str`).\n\nYou can achieve that using <a href=\"https://docs.pydantic.dev/latest/concepts/validators/#field-after-validator\" class=\"external-link\" target=\"_blank\">Pydantic's `AfterValidator`</a> inside of `Annotated`.\n\nPydantic also has <a href=\"https://docs.pydantic.dev/latest/concepts/validators/#field-before-validator\" class=\"external-link\" target=\"_blank\">`BeforeValidator`</a> and others. 🤓\n\nFor example, this custom validator checks that the item ID starts with `isbn-` for an <abbr title=\"ISBN means International Standard Book Number\">ISBN</abbr> book number or with `imdb-` for an <abbr title=\"IMDB (Internet Movie Database) is a website with information about movies\">IMDB</abbr> movie URL ID:\n\n```python\nimport random\nfrom typing import Annotated\n\nfrom fastapi import FastAPI\nfrom pydantic import AfterValidator\n\napp = FastAPI()\n\ndata = {\n    \"isbn-9781529046137\": \"The Hitchhiker's Guide to the Galaxy\",\n    \"imdb-tt0371724\": \"The Hitchhiker's Guide to the Galaxy\",\n    \"isbn-9781439512982\": \"Isaac Asimov: The Complete Stories, Vol. 2\",\n}\n\ndef check_valid_id(id: str):\n    if not id.startswith((\"isbn-\", \"imdb-\")):\n        raise ValueError('Invalid ID format, it must start with \"isbn-\" or \"imdb-\"')\n    return id\n\n@app.get(\"/items/\")\nasync def read_items(\n    id: Annotated[str | None, AfterValidator(check_valid_id)] = None,\n):\n    if id:\n        item = data.get(id)\n    else:\n        id, item = random.choice(list(data.items()))\n    return {\"id\": id, \"name\": item}\n```\n\nThis is available with Pydantic version 2 or above. 😎\n\nIf you need to do any type of validation that requires communicating with any **external component**, like a database or another API, you should instead use **FastAPI Dependencies**, you will learn about them later.\n\nThese custom validators are for things that can be checked with **only** the **same data** provided in the request.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/understand-that-code",
+      "title": "Query Parameters and String Validations · Understand that Code",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#understand-that-code",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L437",
+      "text": "The important point is just using **`AfterValidator` with a function inside `Annotated`**. Feel free to skip this part. 🤸\n\n---\n\nBut if you're curious about this specific code example and you're still entertained, here are some extra details.",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/string-with-value-startswith",
+      "title": "Query Parameters and String Validations · String with value.startswith()",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#string-with-value-startswith",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L445",
+      "text": "Did you notice? a string using `value.startswith()` can take a tuple, and it will check each value in the tuple:\n\n```python\ndef check_valid_id(id: str):\n    if not id.startswith((\"isbn-\", \"imdb-\")):\n        raise ValueError('Invalid ID format, it must start with \"isbn-\" or \"imdb-\"')\n    return id\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/a-random-item",
+      "title": "Query Parameters and String Validations · A Random Item",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#a-random-item",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L451",
+      "text": "With `data.items()` we get an <abbr title=\"Something we can iterate on with a for loop, like a list, set, etc.\">iterable object</abbr> with tuples containing the key and value for each dictionary item.\n\nWe convert this iterable object into a proper `list` with `list(data.items())`.\n\nThen with `random.choice()` we can get a **random value** from the list, so, we get a tuple with `(id, name)`. It will be something like `(\"imdb-tt0371724\", \"The Hitchhiker's Guide to the Galaxy\")`.\n\nThen we **assign those two values** of the tuple to the variables `id` and `name`.\n\nSo, if the user didn't provide an item ID, they will still receive a random suggestion.\n\n...we do all this in a **single simple line**. 🤯 Don't you love Python? 🐍\n\n```python\n@app.get(\"/items/\")\nasync def read_items(\n    id: Annotated[str | None, AfterValidator(check_valid_id)] = None,\n):\n    if id:\n        item = data.get(id)\n    else:\n        id, item = random.choice(list(data.items()))\n    return {\"id\": id, \"name\": item}\n```",
+      "topic": "Validation"
+    },
+    {
+      "id": "query-params-str-validations/recap",
+      "title": "Query Parameters and String Validations · Recap",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params-str-validations/#recap",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L467",
+      "text": "You can declare additional validations and metadata for your parameters.\n\nGeneric validations and metadata:\n\n* `alias`\n* `title`\n* `description`\n* `deprecated`\n\nValidations specific for strings:\n\n* `min_length`\n* `max_length`\n* `pattern`\n\nCustom validations using `AfterValidator`.\n\nIn these examples you saw how to declare validations for `str` values.\n\nSee the next chapters to learn how to declare validations for other types, like numbers.",
+      "topic": "Validation"
+    }
+  ]
+}

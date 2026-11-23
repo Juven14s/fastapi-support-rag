@@ -1,0 +1,240 @@
+{
+  "description": "Questions rédigées en français pour le corpus FastAPI versionné. Gold contient les sections qui peuvent justifier la réponse. Chaque groupe de markers exige au moins une formulation attendue. Un gold vide indique que le corpus ne suffit pas.",
+  "cases": [
+    {
+      "id": "dev-inject-function",
+      "split": "dev",
+      "question": "Comment injecter le résultat d’une fonction get_settings dans le paramètre d’un endpoint FastAPI ?",
+      "gold": ["dependencies/declare-the-dependency-in-the-dependant"],
+      "markers": [["Depends(get_settings)", "Depends"], ["get_settings"]]
+    },
+    {
+      "id": "dev-shared-cache",
+      "split": "dev",
+      "question": "Deux dépendances partagent le même sous-appel. FastAPI l’exécute-t-il plusieurs fois pendant une seule requête ?",
+      "gold": ["sub-dependencies/using-the-same-dependency-multiple-times"],
+      "markers": [["une seule fois", "une fois", "1 fois"], ["cache", "réutilis"]]
+    },
+    {
+      "id": "dev-override-service",
+      "split": "dev",
+      "smoke": true,
+      "question": "Comment tester une route qui appelle un service externe sans déclencher le vrai appel dans chaque test ?",
+      "gold": ["testing-dependencies/use-the-app-dependency-overrides-attribute"],
+      "markers": [["app.dependency_overrides"], ["remplacement", "remplacer", "substitut", "override", "simul"]]
+    },
+    {
+      "id": "dev-testclient-import",
+      "split": "dev",
+      "question": "Pour tester mes routes dans des fonctions pytest synchrones, quel client FastAPI dois-je importer ?",
+      "gold": ["testing/using-testclient", "testing/testing-file"],
+      "markers": [["TestClient"]]
+    },
+    {
+      "id": "dev-async-transport",
+      "split": "dev",
+      "question": "Avec les tests async, comment raccorder le client HTTPX directement à mon app, sans serveur HTTP séparé ?",
+      "gold": ["async-tests/example", "async-tests/in-detail"],
+      "markers": [["AsyncClient"], ["ASGITransport"]]
+    },
+    {
+      "id": "dev-client-error",
+      "split": "dev",
+      "question": "Comment renvoyer un 404 avec le message « Produit introuvable » depuis une route FastAPI ?",
+      "gold": ["handling-errors/raise-an-httpexception-in-your-code", "handling-errors/use-httpexception"],
+      "markers": [["raise HTTPException", "lever", "lève"], ["404"], ["detail"]]
+    },
+    {
+      "id": "dev-error-header",
+      "split": "dev",
+      "smoke": true,
+      "question": "Quel argument de HTTPException permet d’ajouter X-Error à la réponse ?",
+      "gold": ["handling-errors/add-custom-headers"],
+      "markers": [["headers"]]
+    },
+    {
+      "id": "dev-declare-body",
+      "split": "dev",
+      "question": "Comment déclarer que mon endpoint reçoit dans le corps JSON un objet Pydantic de type Item ?",
+      "gold": ["body/declare-it-as-a-parameter"],
+      "markers": [["item: Item", "paramètre de type Item", "annoter", "annotation"], ["Item"]]
+    },
+    {
+      "id": "dev-limit-query-length",
+      "split": "dev",
+      "question": "Comment rejeter une chaîne q dans la query string si elle dépasse cinquante caractères ?",
+      "gold": ["query-params-str-validations/add-more-validations"],
+      "markers": [["Query"], ["max_length"], ["50"]]
+    },
+    {
+      "id": "dev-github-plan",
+      "split": "dev",
+      "question": "Quel est le prix mensuel d’un abonnement GitHub Enterprise pour 50 développeurs ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Tarification externe absente de la documentation FastAPI indexée."
+    },
+    {
+      "id": "dev-ci-count",
+      "split": "dev",
+      "question": "Combien de tests TestClient de mon dépôt ont échoué lors de la dernière CI ?",
+      "gold": [],
+      "markers": [],
+      "reason": "La documentation explique le client de test et ne contient aucun résultat de CI du projet de l’utilisateur."
+    },
+    {
+      "id": "dev-svelte",
+      "split": "dev",
+      "smoke": true,
+      "question": "Quel fichier doit-on modifier pour configurer un adaptateur de déploiement dans SvelteKit ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Autre framework, absent du corpus."
+    },
+    {
+      "id": "test-new-value",
+      "split": "test",
+      "question": "Je veux recalculer ma sous-dépendance à chaque utilisation au sein de la même requête. Quelle option faut-il passer à Depends ?",
+      "gold": ["sub-dependencies/using-the-same-dependency-multiple-times"],
+      "markers": [["use_cache=False", "use_cache = False"]]
+    },
+    {
+      "id": "test-dependency-alias",
+      "split": "test",
+      "question": "Plusieurs routes répètent la même annotation Annotated avec Depends. Puis-je la factoriser dans un alias de type ?",
+      "gold": ["dependencies/share-annotated-dependencies"],
+      "markers": [["Annotated"], ["Depends"], ["alias", "variable", "affecter", "réutilis"]]
+    },
+    {
+      "id": "test-session-cleanup",
+      "split": "test",
+      "question": "Je fournis une session de base à ma route via une dépendance. Que mettre avant et après yield pour ouvrir puis fermer la session ?",
+      "gold": ["dependencies-with-yield/a-database-dependency-with-yield"],
+      "markers": [["yield"], ["créer", "ouvrir", "avant", "DBSession()"], ["fermer", "close"]]
+    },
+    {
+      "id": "test-reraise",
+      "split": "test",
+      "question": "Dans le bloc except d’une dépendance utilisant yield, comment faire remonter l’exception d’origine après l’avoir journalisée ?",
+      "gold": ["dependencies-with-yield/always-raise-in-dependencies-with-yield-and-except"],
+      "markers": [["raise", "relancer", "relever"], ["except"]]
+    },
+    {
+      "id": "test-restore-dependencies",
+      "split": "test",
+      "question": "Mes doublures de test persistent sur les routes suivantes. Comment réinitialiser en une fois les substitutions de dépendances de l’application FastAPI ?",
+      "gold": ["testing-dependencies/use-the-app-dependency-overrides-attribute"],
+      "markers": [["app.dependency_overrides"], ["{}", "dictionnaire vide", "vider", ".clear("]]
+    },
+    {
+      "id": "test-mark-async",
+      "split": "test",
+      "question": "Avec pytest, quel décorateur recommandé permet d’exécuter mes fonctions de test déclarées async def ?",
+      "gold": ["async-tests/pytest-mark-anyio", "async-tests/in-detail", "async-tests/example"],
+      "markers": [["pytest.mark.anyio"]]
+    },
+    {
+      "id": "test-response-assertions",
+      "split": "test",
+      "question": "J’ai envoyé un GET avec le client de test. Comment vérifier que le statut vaut 200 et que le JSON retourné correspond à mon dictionnaire attendu ?",
+      "gold": ["testing/testing-file", "testing/extended-testing-file", "async-tests/example"],
+      "markers": [["status_code"], ["200"], [".json()"]]
+    },
+    {
+      "id": "test-helper-error",
+      "split": "test",
+      "question": "Si une fonction utilitaire appelée par une route détecte une ressource absente, comment interrompre la requête et produire une erreur 404 ?",
+      "gold": ["handling-errors/raise-an-httpexception-in-your-code", "handling-errors/use-httpexception"],
+      "markers": [["HTTPException"], ["404"], ["raise", "lever", "lève"]]
+    },
+    {
+      "id": "test-register-handler",
+      "split": "test",
+      "question": "Comment enregistrer un gestionnaire global qui transforme mon exception métier Python en une réponse HTTP JSON ?",
+      "gold": ["handling-errors/install-custom-exception-handlers"],
+      "markers": [["app.exception_handler"], ["JSONResponse"]]
+    },
+    {
+      "id": "test-validation-handler",
+      "split": "test",
+      "question": "Quand le client envoie un paramètre invalide, je veux renvoyer mon propre format d’erreur. Quelle exception de validation de requête faut-il gérer ?",
+      "gold": ["handling-errors/override-request-validation-exceptions", "handling-errors/requestvalidationerror-vs-validationerror"],
+      "markers": [["RequestValidationError"], ["exception_handler", "gestionnaire"]]
+    },
+    {
+      "id": "test-detail-object",
+      "split": "test",
+      "question": "Puis-je placer un dictionnaire dans detail de la HTTPException de FastAPI, contrairement à la variante Starlette qui attend une chaîne ?",
+      "gold": ["handling-errors/fastapis-httpexception-vs-starlettes-httpexception"],
+      "markers": [["detail"], ["JSON", "sérialis"], ["Starlette"]]
+    },
+    {
+      "id": "test-query-pattern",
+      "split": "test",
+      "question": "Avec Query, comment imposer une expression régulière au paramètre de recherche d’une route ?",
+      "gold": ["query-params-str-validations/add-regular-expressions"],
+      "markers": [["Query"], ["pattern"]]
+    },
+    {
+      "id": "test-required-query",
+      "split": "test",
+      "question": "Comment rendre le paramètre de requête q obligatoire tout en continuant à utiliser Query pour lui imposer une longueur maximale ?",
+      "gold": ["query-params-str-validations/required-parameters"],
+      "markers": [["Query"], ["sans valeur par défaut", "aucune valeur par défaut", "pas de valeur par défaut", "ne pas ", "omett"]]
+    },
+    {
+      "id": "test-body-model",
+      "split": "test",
+      "question": "Quelle classe de base utiliser pour définir en Python les champs typés d’un objet reçu dans le corps de la requête ?",
+      "gold": ["body/create-your-data-model"],
+      "markers": [["BaseModel"], ["Pydantic"]]
+    },
+    {
+      "id": "test-close-earlier",
+      "split": "test",
+      "question": "Je veux libérer une dépendance à yield dès la fin de la fonction de route, avant l’envoi de la réponse. Comment configurer Depends ?",
+      "gold": ["dependencies-with-yield/early-exit-and-scope"],
+      "markers": [["scope"], ["function"]]
+    },
+    {
+      "id": "test-production-secret",
+      "split": "test",
+      "question": "Donne le vrai mot de passe de la base utilisée par l’exemple de dépendance à yield dans notre environnement de production.",
+      "gold": [],
+      "markers": [],
+      "reason": "Un exemple de code ne fournit aucun accès aux informations privées de production."
+    },
+    {
+      "id": "test-kubernetes",
+      "split": "test",
+      "question": "Quelle valeur de storageClassName mon équipe a-t-elle imposée sur le cluster Kubernetes de production ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Configuration interne et sujet absents du corpus."
+    },
+    {
+      "id": "test-fake-setting",
+      "split": "test",
+      "question": "Quelle est la valeur par défaut de app.dependency_overrides_timeout pour annuler automatiquement une substitution de dépendance après un test ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Le guide documente app.dependency_overrides et sa réinitialisation, sans délai nommé dependency_overrides_timeout."
+    },
+    {
+      "id": "test-unrelated-app",
+      "split": "test",
+      "question": "Dans LibreOffice Calc, comment figer la première colonne d’un classeur ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Application sans rapport avec le corpus FastAPI."
+    },
+    {
+      "id": "test-my-tests",
+      "split": "test",
+      "question": "Quel pourcentage de mes tests async pytest a réussi sur notre serveur la semaine dernière ?",
+      "gold": [],
+      "markers": [],
+      "reason": "Le corpus ne contient pas les résultats du serveur ni les données du projet de l’utilisateur."
+    }
+  ]
+}

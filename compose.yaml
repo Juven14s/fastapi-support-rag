@@ -1,0 +1,57 @@
+services:
+  app:
+    build: .
+    environment:
+      RAG_MODEL_URL: ${RAG_MODEL_URL:-http://model:8080/v1}
+      RAG_MODEL_NAME: ${RAG_MODEL_NAME:-qwen3-4b-instruct}
+      RAG_EMBEDDING_CACHE: ${RAG_EMBEDDING_CACHE:-/home/rag/.cache/embeddings}
+      RAG_OFFLINE: ${RAG_OFFLINE:-0}
+    ports:
+      - "127.0.0.1:${RAG_APP_PORT:-8076}:8000"
+    volumes:
+      - embedding-cache:/home/rag/.cache
+    depends_on:
+      model:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/healthz', timeout=2).close()"
+      interval: 5s
+      timeout: 3s
+      retries: 60
+
+  model:
+    image: ghcr.io/ggml-org/llama.cpp@sha256:ae28f5c2046de51dfd00c9116a36fe44b5e8703ef730d0aea69082781eecb1f7
+    command:
+      - -hf
+      - unsloth/Qwen3-4B-Instruct-2507-GGUF:Q4_K_M
+      - --alias
+      - ${RAG_MODEL_NAME:-qwen3-4b-instruct}
+      - --jinja
+      - --ctx-size
+      - "6144"
+      - --parallel
+      - "1"
+      - --threads
+      - ${RAG_MODEL_THREADS:-6}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+    environment:
+      LLAMA_ARG_OFFLINE: ${RAG_MODEL_OFFLINE:-0}
+    volumes:
+      - model-cache:/root/.cache/huggingface
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://127.0.0.1:8080/health]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+
+volumes:
+  embedding-cache:
+  model-cache:
+    name: ${RAG_MODEL_CACHE_VOLUME:-fastapi-support-rag-model-cache}
