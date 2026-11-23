@@ -70,6 +70,7 @@ def evaluate_answer(args: argparse.Namespace, case: dict, corpus_urls: dict[str,
         "status": status,
         "answer": result["answer"],
         "citation_ids": [citation["id"] for citation in citations],
+        "citations": citations,
         "invalid_citation_ids": invalid,
         "expected_citation": status == "answered" and bool(cited.intersection(case["gold"])),
         "all_markers_found": (
@@ -78,6 +79,7 @@ def evaluate_answer(args: argparse.Namespace, case: dict, corpus_urls: dict[str,
             and marker_match(result["answer"], case["markers"])
         ),
         "model_called": result["model_called"],
+        "model_attempts": result.get("model_attempts", int(result["model_called"])),
         "client_latency_ms": latency,
     }
 
@@ -156,6 +158,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default="http://127.0.0.1:8076")
     parser.add_argument("--split", choices=("dev", "test", "all"), help="Defaults to test.")
+    parser.add_argument("--cases-file", type=Path, default=ROOT / "evaluation" / "cases.json")
     parser.add_argument("--mode", action="append", choices=MODES)
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--timeout", type=float, default=120)
@@ -174,7 +177,7 @@ def main() -> int:
     args = parse_args()
     corpus = read_json(ROOT / "support_rag" / "data" / "corpus.json")
     corpus_urls = {section["id"]: section["url"] for section in corpus["sections"]}
-    fixture = read_json(ROOT / "evaluation" / "cases.json")
+    fixture = read_json(args.cases_file)
     cases = [
         case
         for case in fixture["cases"]

@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "id": "v02-sync-dependency",
+      "split": "test",
+      "question": "Une fonction de dépendance déclarée avec def peut-elle être utilisée par une route async def ?",
+      "gold": ["dependencies/to-async-or-not-to-async"],
+      "markers": [["oui", "peut"], ["async def"]]
+    },
+    {
+      "id": "v02-discard-dependency",
+      "split": "test",
+      "question": "Où déclarer une dépendance pour une seule route quand je ne veux pas recevoir sa valeur de retour dans la fonction ?",
+      "gold": ["dependencies-in-path-operation-decorators/add-dependencies-to-the-path-operation-decorator", "dependencies-in-path-operation-decorators/return-values"],
+      "markers": [["dependencies"], ["décorateur"]]
+    },
+    {
+      "id": "v02-global-deps",
+      "split": "test",
+      "question": "Comment imposer une vérification commune à toutes les routes dès la construction de l’application FastAPI ?",
+      "gold": ["dependencies-in-path-operation-decorators/global-dependencies"],
+      "markers": [["FastAPI("], ["Depends"], ["dependencies"]]
+    },
+    {
+      "id": "v02-yield-order",
+      "split": "test",
+      "question": "Si une dépendance A utilise une dépendance B et que toutes deux utilisent yield, dans quel ordre leurs blocs de nettoyage s’exécutent-ils ?",
+      "gold": ["dependencies-with-yield/sub-dependencies-with-yield"],
+      "markers": [["inverse", "ordre", "d’abord"], ["nettoyage", "yield", "dépendance"]]
+    },
+    {
+      "id": "v02-testclient-in-async",
+      "split": "test",
+      "question": "Puis-je garder TestClient dans une fonction de test déclarée avec async def comme dans un test synchrone ?",
+      "gold": ["async-tests/intro", "async-tests/httpx"],
+      "markers": [["non", "pas"], ["AsyncClient", "HTTPX"]]
+    },
+    {
+      "id": "v02-terminal-tests",
+      "split": "test",
+      "question": "Après avoir installé pytest, quelle commande dois-je lancer dans le terminal pour exécuter les tests du projet ?",
+      "gold": ["testing/run-it", "async-tests/run-it"],
+      "markers": [["pytest"]]
+    },
+    {
+      "id": "v02-plain-text-response",
+      "split": "test",
+      "question": "Quel objet de réponse utiliser dans un gestionnaire d’erreur HTTP pour envoyer du texte brut au lieu d’un JSON ?",
+      "gold": ["handling-errors/override-the-httpexception-error-handler", "handling-errors/override-request-validation-exceptions"],
+      "markers": [["PlainTextResponse"]]
+    },
+    {
+      "id": "v02-server-validation-bug",
+      "split": "test",
+      "question": "Une erreur de validation Pydantic dans le modèle de réponse de mon endpoint indique-t-elle une erreur de saisie du client ou un bug serveur ? Quel statut reçoit le client ?",
+      "gold": ["handling-errors/requestvalidationerror-vs-validationerror"],
+      "markers": [["500"], ["bug", "serveur"]]
+    },
+    {
+      "id": "v02-path-and-body",
+      "split": "test",
+      "question": "Une même route FastAPI peut-elle recevoir un identifiant dans le chemin et un objet Pydantic dans le corps de la requête ?",
+      "gold": ["body/request-body-path-parameters", "body/request-body-path-query-parameters"],
+      "markers": [["oui", "peut"], ["chemin"], ["corps"]]
+    },
+    {
+      "id": "v02-dump-model",
+      "split": "test",
+      "question": "Quel appel permet de convertir en dictionnaire une instance du modèle Pydantic reçu par la route ?",
+      "gold": ["body/use-the-model", "body/request-body-path-parameters", "body/request-body-path-query-parameters"],
+      "markers": [["model_dump"]]
+    },
+    {
+      "id": "v02-body-openapi",
+      "split": "test",
+      "question": "FastAPI ajoute-t-il le schéma du corps de la requête à la documentation OpenAPI si le corps est défini par un modèle Pydantic ?",
+      "gold": ["body/results", "body/automatic-docs"],
+      "markers": [["oui", "automatiquement"], ["schéma", "JSON Schema"], ["OpenAPI"]]
+    },
+    {
+      "id": "v02-query-list",
+      "split": "test",
+      "question": "Comment déclarer un paramètre q qui accepte plusieurs valeurs dans une URL comme ?q=foo&q=bar ?",
+      "gold": ["query-params-str-validations/query-parameter-list-multiple-values"],
+      "markers": [["list"], ["Query"]]
+    },
+    {
+      "id": "v02-query-pattern-migration",
+      "split": "test",
+      "question": "Mon code Pydantic v1 passe regex à Query. Quel nom d’argument dois-je utiliser quand je mets cette validation à jour ?",
+      "gold": ["query-params-str-validations/pydantic-v1-regex-instead-of-pattern", "query-params-str-validations/add-regular-expressions"],
+      "markers": [["pattern"]]
+    },
+    {
+      "id": "v02-query-alias",
+      "split": "test",
+      "question": "Je voudrais un paramètre HTTP nommé item-query et une variable Python q. Quel argument de Query permet de relier les deux ?",
+      "gold": ["query-params-str-validations/alias-parameters"],
+      "markers": [["alias"], ["item-query"]]
+    },
+    {
+      "id": "v02-query-deprecation",
+      "split": "test",
+      "question": "Comment indiquer dans la documentation qu’un paramètre de requête encore accepté est obsolète ?",
+      "gold": ["query-params-str-validations/deprecating-parameters"],
+      "markers": [["deprecated"], ["true"]]
+    },
+    {
+      "id": "v02-private-build-tally",
+      "split": "test",
+      "question": "Quel est le taux d’échec de nos builds pytest depuis la migration de vendredi ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v02-private-deployment-token",
+      "split": "test",
+      "question": "Quel est le jeton de mon instance FastAPI de préproduction ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v02-private-invoice",
+      "split": "test",
+      "question": "Quel est le montant de ma dernière facture Railway ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v02-django-config",
+      "split": "test",
+      "question": "Quel réglage de Django REST Framework configure le nombre d’éléments par page de mon ViewSet ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v02-fake-retries",
+      "split": "test",
+      "question": "Quelle valeur par défaut a l’argument retries de Depends pour retenter automatiquement une dépendance ?",
+      "gold": [],
+      "markers": []
+    }
+  ]
+}

@@ -43,6 +43,7 @@ services:
       - "8080"
     environment:
       LLAMA_ARG_OFFLINE: ${RAG_MODEL_OFFLINE:-0}
+      LLAMA_ARG_CACHE_RAM: "256"
     volumes:
       - model-cache:/root/.cache/huggingface
     healthcheck:

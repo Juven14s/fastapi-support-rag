@@ -40,6 +40,7 @@ class Answer(BaseModel):
     citations: list[Citation] = Field(default_factory=list)
     latency_ms: float
     model_called: bool
+    model_attempts: int = 0
 
 
 class Draft(BaseModel):

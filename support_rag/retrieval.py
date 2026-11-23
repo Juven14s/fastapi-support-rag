@@ -40,6 +40,7 @@ TECHNICAL_TERMS = (
     (r"\b(?:reponse|erreurs?)\b", "response error"),
     (r"\b(?:en[- ]tetes?)\b", "headers"),
     (r"\b(?:corps)\b", "request body"),
+    (r"\b(?:remont\w*|relanc\w*|propag\w*) (?:l['’]|la |une )?exception\b", "re-raise exception"),
     (r"\b(?:caracteres|longueur)\b", "string length"),
 )
 
