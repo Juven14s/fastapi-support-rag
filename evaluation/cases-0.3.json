@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "id": "v03-openapi-dependencies",
+      "split": "test",
+      "question": "Les exigences de requête déclarées par une sous-dépendance apparaissent-elles dans le schéma OpenAPI et dans la documentation interactive ?",
+      "gold": ["dependencies/integrated-with-openapi", "dependencies/integrated-with-openapi_1"],
+      "markers": [["oui", "intégr"], ["OpenAPI"], ["documentation", "docs"]]
+    },
+    {
+      "id": "v03-nested-depends",
+      "split": "test",
+      "question": "Comment mettre à disposition la valeur d’une fonction auxiliaire dans une autre fonction qui est elle-même une dépendance FastAPI ?",
+      "gold": ["sub-dependencies/first-dependency-dependable", "sub-dependencies/second-dependency-dependable-and-dependant"],
+      "markers": [["Depends"], ["paramètre", "Annotated"]]
+    },
+    {
+      "id": "v03-stop-from-decorator",
+      "split": "test",
+      "question": "Une dépendance déclarée dans le décorateur peut-elle interrompre la requête si une vérification échoue ? Comment ?",
+      "gold": ["dependencies-in-path-operation-decorators/raise-exceptions", "dependencies-in-path-operation-decorators/dependency-requirements"],
+      "markers": [["HTTPException"], ["lever", "raise"]]
+    },
+    {
+      "id": "v03-default-yield-scope",
+      "split": "test",
+      "question": "À quel moment s’exécute le bloc après yield si je ne précise aucun scope dans Depends ?",
+      "gold": ["dependencies-with-yield/early-exit-and-scope", "dependencies-with-yield/execution-of-dependencies-with-yield"],
+      "markers": [["après"], ["réponse"]]
+    },
+    {
+      "id": "v03-cleanup-retained-resource",
+      "split": "test",
+      "question": "Une dépendance transaction est utilisée par une dépendance service, toutes deux avec yield. Laquelle doit rester ouverte jusqu’à ce que l’autre termine son nettoyage ?",
+      "gold": ["dependencies-with-yield/sub-dependencies-with-yield"],
+      "markers": [["transaction"], ["service"], ["après", "jusqu"]]
+    },
+    {
+      "id": "v03-lifespan-test",
+      "split": "test",
+      "question": "Le client AsyncClient démarre-t-il les événements de démarrage de l’application tout seul en test ? Quel outil la documentation conseille-t-elle pour les déclencher ?",
+      "gold": ["async-tests/in-detail"],
+      "markers": [["non", "pas"], ["LifespanManager"]]
+    },
+    {
+      "id": "v03-test-base-url",
+      "split": "test",
+      "question": "Dans l’exemple de test avec HTTPX AsyncClient, quel argument permet ensuite d’envoyer une requête à un chemin relatif comme / ?",
+      "gold": ["async-tests/example", "async-tests/in-detail"],
+      "markers": [["base_url"]]
+    },
+    {
+      "id": "v03-await-other-functions",
+      "split": "test",
+      "question": "Dans un test async qui appelle une route FastAPI, puis-je aussi attendre une autre coroutine avec await pour vérifier un effet de bord ?",
+      "gold": ["async-tests/other-asynchronous-function-calls", "async-tests/intro"],
+      "markers": [["oui", "peut"], ["await"]]
+    },
+    {
+      "id": "v03-invalid-request-body",
+      "split": "test",
+      "question": "Quelle propriété de RequestValidationError donne le corps reçu dans la requête invalide ?",
+      "gold": ["handling-errors/use-the-requestvalidationerror-body"],
+      "markers": [["body"]]
+    },
+    {
+      "id": "v03-reuse-default-handler",
+      "split": "test",
+      "question": "Je veux journaliser une erreur puis conserver la réponse d’erreur par défaut de FastAPI. D’où importer le gestionnaire d’exception HTTP existant ?",
+      "gold": ["handling-errors/reuse-fastapis-exception-handlers"],
+      "markers": [["fastapi.exception_handlers"], ["http_exception_handler"]]
+    },
+    {
+      "id": "v03-body-attribute",
+      "split": "test",
+      "question": "Dans ma fonction de route qui reçoit item comme modèle Pydantic, comment lire son prix dans l’exemple de FastAPI ?",
+      "gold": ["body/use-the-model"],
+      "markers": [["item.price"]]
+    },
+    {
+      "id": "v03-scalar-query-with-body",
+      "split": "test",
+      "question": "Ma route reçoit un modèle Pydantic item et un autre paramètre q de type str. Si q est absent du chemin, d’où vient sa valeur ?",
+      "gold": ["body/request-body-path-query-parameters", "body/declare-it-as-a-parameter"],
+      "markers": [["query", "requête"], ["q"]]
+    },
+    {
+      "id": "v03-annotated-default",
+      "split": "test",
+      "question": "Avec Annotated et Query, dois-je indiquer la valeur par défaut dans Query ou après le signe égal du paramètre de ma fonction ?",
+      "gold": ["query-params-str-validations/query-as-the-default-value-or-in-annotated", "query-params-str-validations/default-values"],
+      "markers": [["du paramètre", "de la fonction", "signe égal", " = "]]
+    },
+    {
+      "id": "v03-hidden-query",
+      "split": "test",
+      "question": "Quel paramètre de Query permet de garder un paramètre utilisable tout en le retirant de la documentation OpenAPI ?",
+      "gold": ["query-params-str-validations/exclude-parameters-from-openapi"],
+      "markers": [["include_in_schema"], ["false"]]
+    },
+    {
+      "id": "v03-historical-regex",
+      "split": "test",
+      "question": "Avant Pydantic 2 et FastAPI 0.100.0, comment s’appelait l’argument de Query qui correspond au nouveau pattern ?",
+      "gold": ["query-params-str-validations/pydantic-v1-regex-instead-of-pattern"],
+      "markers": [["regex"]]
+    },
+    {
+      "id": "v03-private-http-count",
+      "split": "test",
+      "question": "Combien de réponses HTTP 500 notre API a-t-elle renvoyées sur le serveur hier ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v03-private-db-host",
+      "split": "test",
+      "question": "Quelle adresse de base de données est utilisée dans notre cluster de préproduction ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v03-outside-observation",
+      "split": "test",
+      "question": "De quelle couleur est la chemise que porte mon collègue au bureau aujourd’hui ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v03-angular-interceptor",
+      "split": "test",
+      "question": "Comment définir un intercepteur Angular qui ajoute un en-tête à toutes les requêtes de mon client ?",
+      "gold": [],
+      "markers": []
+    },
+    {
+      "id": "v03-fake-trim",
+      "split": "test",
+      "question": "Quelle valeur de trim faut-il passer à Query(trim=...) selon la documentation FastAPI pour supprimer automatiquement les espaces ?",
+      "gold": [],
+      "markers": []
+    }
+  ]
+}

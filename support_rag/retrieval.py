@@ -40,6 +40,7 @@ TECHNICAL_TERMS = (
     (r"\b(?:reponse|erreurs?)\b", "response error"),
     (r"\b(?:en[- ]tetes?)\b", "headers"),
     (r"\b(?:corps)\b", "request body"),
+    (r"\b(?:toutes les routes|ensemble des routes|tous les endpoints)\b", "global dependencies"),
     (r"\b(?:remont\w*|relanc\w*|propag\w*) (?:l['’]|la |une )?exception\b", "re-raise exception"),
     (r"\b(?:caracteres|longueur)\b", "string length"),
 )
@@ -132,6 +133,12 @@ def bilingual_query(question: str) -> str:
     expansion = [english for pattern, english in TECHNICAL_TERMS if re.search(pattern, folded)]
     if "external service" in expansion and re.search(r"\btest\w*\b", folded):
         expansion.append("testing dependency overrides app.dependency_overrides")
+    if re.search(r"\b(?:modele|pydantic)\b", folded) and re.search(
+        r"\b(?:dict|dictionnaire)\b", folded
+    ):
+        expansion.append("model_dump convert model dictionary")
+    if "depasse" in folded and re.search(r"\b(?:caracteres|longueur)\b", folded):
+        expansion.append("Query max_length")
     return " ".join([question, *expansion])
 
 

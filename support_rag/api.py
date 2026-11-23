@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from support_rag.documented import documented_cleanup_order, documented_setting
 from support_rag.generation import (
     ABSTENTION,
     PRIVATE_ABSTENTION,
@@ -16,6 +17,8 @@ from support_rag.generation import (
     available_evidence,
     checked_citations,
     expanded_evidence,
+    needs_semantic_review,
+    review_evidence,
 )
 from support_rag.models import Answer, Citation, Question, SearchHit, SearchRequest, SearchResponse
 from support_rag.retrieval import Corpus, E5Embedding, Index
@@ -23,7 +26,7 @@ from support_rag.scope import requests_private_facts
 
 logger = logging.getLogger(__name__)
 PACKAGE = Path(__file__).resolve().parent
-MIN_RELEVANCE = 0.83
+MIN_RELEVANCE = 0.80
 EXPAND_RELEVANCE = 0.85
 
 
@@ -40,7 +43,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="FastAPI Support RAG", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="FastAPI Support RAG", version="0.3.0", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=PACKAGE / "static", check_dir=False), name="static")
 
 
@@ -90,6 +93,18 @@ def answer(body: Question, request: Request):
         )
     index = request.app.state.index
     matches = index.search(body.question, "hybrid", 5)
+    documented = documented_cleanup_order(body.question, matches) or documented_setting(
+        body.question, matches
+    )
+    if documented:
+        text, citation = documented
+        return Answer(
+            status="answered",
+            answer=text,
+            citations=[citation],
+            latency_ms=round((perf_counter() - started) * 1000, 2),
+            model_called=False,
+        )
     relevance = max((match.similarity for match in matches), default=0)
     if relevance < MIN_RELEVANCE:
         return Answer(
@@ -103,10 +118,24 @@ def answer(body: Question, request: Request):
     attempts = 1
     try:
         response_text, citations = attempt(model, body.question, evidence, max_tokens=155)
-        if not citations and relevance >= EXPAND_RELEVANCE:
+        review = needs_semantic_review(body.question, relevance)
+        if citations and review:
             attempts += 1
             response_text, citations = attempt(
-                model, body.question, expanded_evidence(matches), max_tokens=210
+                model,
+                body.question,
+                review_evidence(matches, citations),
+                max_tokens=180,
+                proposal=response_text,
+            )
+        elif not citations and relevance >= EXPAND_RELEVANCE:
+            attempts += 1
+            response_text, citations = attempt(
+                model,
+                body.question,
+                expanded_evidence(matches),
+                max_tokens=210,
+                proposal=ABSTENTION if review else None,
             )
     except httpx.HTTPError as error:
         logger.warning("Local generation unavailable (%s)", type(error).__name__)
@@ -122,10 +151,19 @@ def answer(body: Question, request: Request):
 
 
 def attempt(
-    model: LocalModel, question: str, evidence: dict[str, Citation], *, max_tokens: int
+    model: LocalModel,
+    question: str,
+    evidence: dict[str, Citation],
+    *,
+    max_tokens: int,
+    proposal: str | None = None,
 ) -> tuple[str, list[Citation]]:
     try:
-        draft = model.generate(question, evidence, max_tokens=max_tokens)
+        draft = (
+            model.generate(question, evidence, max_tokens=max_tokens)
+            if proposal is None
+            else model.review(question, proposal, evidence, max_tokens=max_tokens)
+        )
         citations = checked_citations(draft, evidence, question)
         if citations:
             return draft.answer.strip(), citations

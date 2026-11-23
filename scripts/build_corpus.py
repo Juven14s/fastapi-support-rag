@@ -25,6 +25,7 @@ PAGES = {
     "tutorial/handling-errors": "Erreurs",
     "tutorial/body": "Validation",
     "tutorial/query-params-str-validations": "Validation",
+    "tutorial/dependencies/global-dependencies": "Dépendances",
 }
 
 # Keep the pinned heading as the section ID. Some live pages moved older text to a parent section.

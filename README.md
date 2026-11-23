@@ -25,9 +25,10 @@ $env:ANALYTICS_MODEL_OFFLINE = '1'
 
 ## Du document à la réponse
 
-1. Le corpus contient 111 sections de dix pages de FastAPI 0.121.3. Le générateur résout les exemples de code au même commit que la documentation et conserve les URL de section. [Instantané officiel](https://github.com/fastapi/fastapi/tree/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs)
+1. Le corpus contient 113 sections de onze pages de FastAPI 0.121.3. Le générateur résout les exemples de code au même commit que la documentation et conserve les URL de section. [Instantané officiel](https://github.com/fastapi/fastapi/tree/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs)
 2. Une recherche BM25 par mots-clés sert de référence. Le modèle multilingue E5 calcule les embeddings en local sur CPU avec ONNX. Le mode hybride ajoute des termes techniques anglais à la question et combine les rangs des deux recherches. [Modèle E5](https://huggingface.co/intfloat/multilingual-e5-small) · [Poids ONNX utilisés](https://huggingface.co/Xenova/multilingual-e5-small/tree/761b726dd34fb83930e26aab4e9ac3899aa1fa78)
 3. L’assistant s’abstient avant d’appeler Qwen quand la question demande des données privées sur une instance. Pour les autres questions, il sélectionne des extraits courts et vérifie les identifiants de citation, les chiffres et certains attributs d’API avant d’afficher la réponse.
+4. Une similarité entre 0,80 et 0,83 ou une question sur une version ou l’ordre du nettoyage avec `yield` peut déclencher une seconde lecture par Qwen. Pour des formulations explicites, le service peut aussi répondre directement à partir de trois passages précis du corpus sur l’ordre de nettoyage, les dépendances globales et le passage de `regex` à `pattern`.
 
 Le corpus provient de la documentation FastAPI sous licence MIT. Le texte de la licence et l’attribution sont inclus dans [LICENSE.fastapi.txt](support_rag/data/LICENSE.fastapi.txt).
 

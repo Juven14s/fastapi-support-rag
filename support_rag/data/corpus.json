@@ -892,6 +892,22 @@
       "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/query-params-str-validations.md#L467",
       "text": "You can declare additional validations and metadata for your parameters.\n\nGeneric validations and metadata:\n\n* `alias`\n* `title`\n* `description`\n* `deprecated`\n\nValidations specific for strings:\n\n* `min_length`\n* `max_length`\n* `pattern`\n\nCustom validations using `AfterValidator`.\n\nIn these examples you saw how to declare validations for `str` values.\n\nSee the next chapters to learn how to declare validations for other types, like numbers.",
       "topic": "Validation"
+    },
+    {
+      "id": "global-dependencies/intro",
+      "title": "Global Dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/#global-dependencies",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/global-dependencies.md#L1",
+      "text": "For some types of applications you might want to add dependencies to the whole application.\n\nSimilar to the way you can [add `dependencies` to the *path operation decorators*](dependencies-in-path-operation-decorators.md){.internal-link target=_blank}, you can add them to the `FastAPI` application.\n\nIn that case, they will be applied to all the *path operations* in the application:\n\n```python\nfrom fastapi import Depends, FastAPI, Header, HTTPException\nfrom typing_extensions import Annotated\n\nasync def verify_token(x_token: Annotated[str, Header()]):\n    if x_token != \"fake-super-secret-token\":\n        raise HTTPException(status_code=400, detail=\"X-Token header invalid\")\n\nasync def verify_key(x_key: Annotated[str, Header()]):\n    if x_key != \"fake-super-secret-key\":\n        raise HTTPException(status_code=400, detail=\"X-Key header invalid\")\n    return x_key\n\napp = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])\n\n@app.get(\"/items/\")\nasync def read_items():\n    return [{\"item\": \"Portal Gun\"}, {\"item\": \"Plumbus\"}]\n\n@app.get(\"/users/\")\nasync def read_users():\n    return [{\"username\": \"Rick\"}, {\"username\": \"Morty\"}]\n```\n\nAnd all the ideas in the section about [adding `dependencies` to the *path operation decorators*](dependencies-in-path-operation-decorators.md){.internal-link target=_blank} still apply, but in this case, to all of the *path operations* in the app.",
+      "topic": "Dépendances"
+    },
+    {
+      "id": "global-dependencies/dependencies-for-groups-of-path-operations",
+      "title": "Global Dependencies · Dependencies for groups of *path operations*",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/#dependencies-for-groups-of-path-operations",
+      "source_url": "https://github.com/fastapi/fastapi/blob/325fd16d32fd815633d6caf3d0d75aa7f30c51c9/docs/en/docs/tutorial/dependencies/global-dependencies.md#L14",
+      "text": "Later, when reading about how to structure bigger applications ([Bigger Applications - Multiple Files](../../tutorial/bigger-applications.md){.internal-link target=_blank}), possibly with multiple files, you will learn how to declare a single `dependencies` parameter for a group of *path operations*.",
+      "topic": "Dépendances"
     }
   ]
 }

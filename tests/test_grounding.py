@@ -5,6 +5,13 @@ import httpx
 import numpy as np
 
 from support_rag.api import app
+from support_rag.documented import (
+    GLOBAL_ID,
+    PATTERN_ID,
+    SOURCE_ID,
+    documented_cleanup_order,
+    documented_setting,
+)
 from support_rag.generation import available_evidence, checked_citations
 from support_rag.models import Citation, Draft
 from support_rag.retrieval import Corpus, Index, Match, Passage, Section
@@ -93,6 +100,38 @@ def test_private_data_request_abstains_before_model_and_retrieval():
     assert requests_private_facts("Quel est le jeton de mon instance de préproduction ?")
 
 
+def test_borderline_match_gets_a_reviewed_answer(monkeypatch):
+    index = Index(Corpus(version="0", revision="test", sections=[SECTION]), FixedEmbedding())
+    match = Match(Passage(SECTION, SECTION.text), score=0.1, similarity=0.812)
+    monkeypatch.setattr(index, "search", lambda *_args: [match])
+
+    class ReviewModel:
+        def generate(self, question, evidence, *, max_tokens):
+            return Draft(
+                status="answered", answer="Lance une application distante.", evidence=["S1.1"]
+            )
+
+        def review(self, question, proposal, evidence, *, max_tokens):
+            assert proposal == "Lance une application distante."
+            assert evidence["S1.1"].excerpt == SECTION.text
+            return Draft(status="answered", answer="Passe ton application.", evidence=["S1.1"])
+
+    monkeypatch.setattr(app.state, "index", index, raising=False)
+    monkeypatch.setattr(app.state, "model", ReviewModel(), raising=False)
+
+    async def request():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            return await client.post(
+                "/v1/answer", json={"question": "Comment utiliser TestClient ?"}
+            )
+
+    response = asyncio.run(request()).json()
+    assert response["answer"] == "Passe ton application."
+    assert response["model_attempts"] == 2
+
+
 def test_lexical_search_returns_unique_document_sections():
     long_section = SECTION.model_copy(update={"text": SECTION.text * 80})
     index = Index(Corpus(version="0", revision="test", sections=[long_section]), FixedEmbedding())
@@ -108,3 +147,43 @@ def test_versioned_corpus_has_unique_sections_and_official_links():
     corpus = Corpus.read(path)
     assert len(corpus.revision) == 40
     assert any(section.id.startswith("testing-dependencies/") for section in corpus.sections)
+
+
+def test_cleanup_order_is_sourced_and_respects_active_and_passive_relations():
+    path = Path(__file__).resolve().parents[1] / "support_rag/data/corpus.json"
+    section = next(item for item in Corpus.read(path).sections if item.id == SOURCE_ID)
+    match = Match(Passage(section, section.text), score=1.0, similarity=1.0)
+    for question in (
+        "Avec yield, quel ordre de nettoyage "
+        "si la dépendance Service utilise la dépendance Connexion ?",
+        "Avec yield, qui ferme en premier "
+        "si la dépendance Connexion est utilisée par la dépendance Service ?",
+    ):
+        answer, citation = documented_cleanup_order(question, [match])
+        assert "`Service` avant `Connexion`" in answer
+        assert citation.excerpt in section.text
+    assert documented_cleanup_order(question, []) is None
+
+
+def test_documented_config_and_version_preserve_scope_and_quoted_proof():
+    path = Path(__file__).resolve().parents[1] / "support_rag/data/corpus.json"
+    sections = {
+        item.id: item for item in Corpus.read(path).sections if item.id in {GLOBAL_ID, PATTERN_ID}
+    }
+    global_section = sections[GLOBAL_ID]
+    global_match = Match(Passage(global_section, global_section.text), score=1.0, similarity=1.0)
+    answer, reference = documented_setting(
+        "Comment appliquer une dépendance à toutes les routes d'une application FastAPI ?",
+        [global_match],
+    )
+    assert "FastAPI(dependencies=" in answer
+    assert reference.excerpt in global_section.text
+    version_section = sections[PATTERN_ID]
+    version_match = Match(Passage(version_section, version_section.text), score=1.0, similarity=1.0)
+    answer, reference = documented_setting(
+        "Mon code Pydantic v1 utilise Query(regex=...). "
+        "Je le mets à jour, quel argument utiliser ?",
+        [version_match],
+    )
+    assert "utilise `pattern`" in answer
+    assert reference.excerpt in version_section.text
